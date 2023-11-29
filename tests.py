@@ -21,3 +21,5 @@ if __name__ == "__main__":
     for ix in range(nx):
         Y[0, ix] = sjpr.phi_func_val_at_x(x=X[ix], reconstruction_order=reconstruction_order,
                                    jump_loc=const.DEFAULT_JUMP_LOC, jump_mag=jump_mag)
+
+
