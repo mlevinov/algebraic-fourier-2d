@@ -1,68 +1,48 @@
 import mpmath as mpm
 import numpy as np
 import matplotlib.pyplot as plt
-
-from single_jump_param_recovery import SingleJumpParamRecovery
+import single_jump_param_recovery as sjpr
 from tqdm import tqdm
+import constants as const
 
 
-# constants:
-eps = pow(10,-1)
-DEFAULT_JUMP_LOC = 0
-FUNC_TYPE_F1 = 1
-F1_SMOOTHNESS_ORDER = 5
-FUNC_TYPE_F2 = 2
-F2_SMOOTHNESS_ORDER = 11
-FUNC_TYPE_F3 = 3
-F3_SMOOTHNESS_ORDER = 11
-
-class ExactFormulasForTestFunc:
-    def __int__(self, dps=20, func_type=FUNC_TYPE_F1):
-        # create test for valid func_type input
+class TestFunctions:
+    def __init__(self, dps=const.DEFAULT_DPS, func_type=const.FUNC_TYPE_F1):
         self.dps = dps
-        mpm.mp.dps = self.dps
         self.func_type = func_type
-
     def get_func_val_at_point(self, x, y):
-        if self.func_type == FUNC_TYPE_F1:
+        if self.func_type == const.FUNC_TYPE_F1:
             return self.__get_func_type_1_val_at_point(x, y)
-        elif self.func_type == FUNC_TYPE_F2:
+        elif self.func_type == const.FUNC_TYPE_F2:
             return self.__get_func_type_2_val_at_point(x, y)
         else:
             return self.__get_func_type_3_val_at_point(x, y)
     def __get_func_type_1_val_at_point(self, x, y):
         new_x = mpm.fsub(y, x)
-        jump_magnitudes = mpm.matrix(1, F1_SMOOTHNESS_ORDER + 1)
-        for l in range(F1_SMOOTHNESS_ORDER + 1):
+        jump_magnitudes = mpm.matrix(1, const.F1_SMOOTHNESS_ORDER + 1)
+        for l in range(const.F1_SMOOTHNESS_ORDER + 1):
             a1 = mpm.fdiv(x, mpm.pi)
             a2 = mpm.fdiv(1, mpm.fadd(l, 1))
             a3 = mpm.fmul(a1, a2)
             jump_magnitudes[0, l] = a3
 
-        s = SingleJumpParamRecovery(dps=self.dps).phi_func_val_at_x(x=new_x,
-                                                                      smoothness_order=F1_SMOOTHNESS_ORDER,
-                                                                      jump_loc=DEFAULT_JUMP_LOC,
-                                                                      jump_mag=jump_magnitudes)
+        s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F1_SMOOTHNESS_ORDER,
+                                   jump_loc=const.DEFAULT_JUMP_LOC, jump_mag=jump_magnitudes)
         return s
     def __get_func_type_2_val_at_point(self, x, y):
         new_x = mpm.fsub(y, x)
-        jump_magnitudes = mpm.matrix(1, F2_SMOOTHNESS_ORDER + 1)
-        for l in range(F2_SMOOTHNESS_ORDER + 1):
+        jump_magnitudes = mpm.matrix(1, const.F2_SMOOTHNESS_ORDER + 1)
+        for l in range(const.F2_SMOOTHNESS_ORDER + 1):
             jump_magnitudes[0, l] = 1
-        s = SingleJumpParamRecovery(dps=self.dps).phi_func_val_at_x(x=new_x,
-                                                                    smoothness_order=F2_SMOOTHNESS_ORDER,
-                                                                    jump_loc=DEFAULT_JUMP_LOC,
-                                                                    jump_mag=jump_magnitudes)
+        s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F2_SMOOTHNESS_ORDER,
+                                   jump_loc=const.DEFAULT_JUMP_LOC, jump_mag=jump_magnitudes)
         return s
     def __get_func_type_3_val_at_point(self, x, y):
         new_x = mpm.fsub(y, mpm.fdiv(x, 2))
-        jump_magnitudes = mpm.matrix(1, F3_SMOOTHNESS_ORDER + 1)
-        for l in range(F3_SMOOTHNESS_ORDER + 1):
+        jump_magnitudes = mpm.matrix(1, const.F3_SMOOTHNESS_ORDER + 1)
+        for l in range(const.F3_SMOOTHNESS_ORDER + 1):
             jump_magnitudes[0, l] = 1
-        s = SingleJumpParamRecovery(dps=self.dps).phi_func_val_at_x(x=new_x,
-                                                                    smoothness_order=F3_SMOOTHNESS_ORDER,
-                                                                    jump_loc=DEFAULT_JUMP_LOC,
-                                                                    jump_mag=jump_magnitudes)
+        s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F3_SMOOTHNESS_ORDER,jump_loc=const.DEFAULT_JUMP_LOC,jump_mag=jump_magnitudes)
         return s
     def get_func_slice_at_x(self, x, Y):
         # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
@@ -80,14 +60,20 @@ class ExactFormulasForTestFunc:
             func_val[:, ix] = self.get_func_slice_at_x(X[0, ix], Y)
         return func_val
     def get_func_discontinuity_curve(self, nx=64):
-        X = np.linspace(-np.pi + eps, np.pi, nx)
-        if self.func_type == FUNC_TYPE_F1 or self.func_type == FUNC_TYPE_F2:
+        X = np.linspace(-np.pi + const.eps, np.pi, nx)
+        if self.func_type == const.FUNC_TYPE_F1 or self.func_type == const.FUNC_TYPE_F2:
             return X
         else:
             return X/2
     def get_func_fourier_coefficient(self, ox, oy):
-        if self.func_type == FUNC_TYPE_F1:
+        if self.func_type == const.FUNC_TYPE_F1:
             return self.__get_fourier_func_type_1_coefficient(ox, oy)
+        elif self.func_type == const.FUNC_TYPE_F2:
+            return self.__get_fourier_func_type_2_coefficient(ox, oy)
+        elif self.func_type == const.FUNC_TYPE_F3:
+            return self.__get_fourier_func_type_3_coefficient(ox, oy)
+        else:
+            return 1
     def __get_fourier_func_type_1_coefficient(self, ox, oy):
         if oy == 0 or ox == -oy:
             return 0
@@ -159,16 +145,3 @@ class ExactFormulasForTestFunc:
                 b = mpm.fmul(mpm.power(oy, 12), mpm.fmul(2, mpm.pi))
                 s = mpm.fdiv(a6, b)
                 return s
-
-    # def plot(self, nx, ny, Z):
-    #     # assuming that X, Y are lists or arrays, NOT of type mpm
-    #     XV, YV = np.meshgrid(X, Y)
-    #     ax = plt.axes(projection='3d')
-    #     ax.plot_surface(XV, YV, np.real(Z))
-    #     ax.scatter(X, Y, np.ones(shape=len(X)))
-    #     ax.set_xlabel('x')
-    #     ax.set_ylabel('y')
-    #     ax.view_init(30, 45)
-    #     plt.grid(False)
-    #     plt.axis('off')
-    #     plt.show()
