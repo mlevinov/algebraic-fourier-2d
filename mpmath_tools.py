@@ -3,6 +3,8 @@ import mpmath as mpm
 import constants as const
 
 
+def numpy_array_to_mpmath_matrix(np_arr):
+    return mpm.matrix(np_arr.tolist())
 def mpm_matrix_to_mpmath_numpy_array(mpmath_arr):
     if isinstance(mpmath_arr, np.ndarray):
         return mpmath_arr

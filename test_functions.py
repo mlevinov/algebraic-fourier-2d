@@ -48,16 +48,22 @@ class TestFunctions:
         # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
         ny = len(Y)
         func_values_at_x = mpm.matrix(ny, 1)
+        if Y.cols != 1:
+            Y = Y.T
         for iy in range(ny):
             func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy, 0])
         return func_values_at_x
     def get_func_val(self, X, Y):
-#         assuming Y is mpm matrix of order n * 1 and X is of 1 * m
+        # assuming Y and X are column mpmath vectors (of order n * 1 and m * 1 respectively)
         ny = len(Y)
         nx = len(X)
         func_val = mpm.matrix(ny, nx)
+        if X.cols != 1:
+            X = X.T
+        if Y.cols != 1:
+            Y = Y.T
         for ix in range(nx):
-            func_val[:, ix] = self.get_func_slice_at_x(X[0, ix], Y)
+            func_val[:, ix] = self.get_func_slice_at_x(X[ix, 0], Y)
         return func_val
     def get_func_discontinuity_curve(self, nx=64):
         X = np.linspace(-np.pi + const.eps, np.pi, nx)
