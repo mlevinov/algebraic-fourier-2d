@@ -94,7 +94,7 @@ def approximate_jump_location(reconstruction_order, func_coeff_array,
             full_order_approximated_jump_location = -mpm.arg(closest_root_to_half_order_root)
             return full_order_approximated_jump_location
 def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approximated_jump_location):
-
+    return 0
 def __closest_root_to_unit_disk(roots):
     if not roots:
         print('root list is empty')
