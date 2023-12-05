@@ -94,7 +94,32 @@ def approximate_jump_location(reconstruction_order, func_coeff_array,
             full_order_approximated_jump_location = -mpm.arg(closest_root_to_half_order_root)
             return full_order_approximated_jump_location
 def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approximated_jump_location):
-    return 0
+    func_coeff_col_vec = __to_column_vec(func_coeff_array)
+    omega = mpm.expj(-approximated_jump_location)
+    m = func_coeff_col_vec.rows // 2
+    n = m // (reconstruction_order + 2)
+    b = mpm.matrix(reconstruction_order + 1, 1)
+    VNd = mpm.matrix(reconstruction_order + 1, reconstruction_order + 1)
+    approximated_jump_magnitudes = mpm.matrix(reconstruction_order + 1, 1)
+
+    for i in range( reconstruction_order + 1):
+        index = (i + 1) * n
+        mk_tilde_val = mpm.fmul(mpm.fmul(const.TWO_PI, mpm.power(mpm.fmul(1j, index), reconstruction_order + 1)), func_coeff_col_vec[m + index, 0])
+        b[i, 0] = mpm.fmul(mk_tilde_val, mpm.power(omega, -index))
+        for j in range(reconstruction_order + 1):
+            VNd[i, j] = mpm.power(index, j)
+    sol = mpm.lu_solve(VNd, b)
+    # extracting the actual jump magnitudes:
+    # denote A_l as the jump magnitude of d^l/dx^l(Fx) at its singularity then
+    # denote a_l = sol[l]-> sol = [a_0, a_1, ..., a_l]^T, then
+    # A_l = (-i)^(r0-l) * a_(ro-l)
+    for l in range(reconstruction_order + 1):
+        # sol = [alpha_0,..., alpha_d]
+        # s = alpha_d -> alpha_0
+        s = sol[reconstruction_order - l]
+        c = mpm.power(-1j, reconstruction_order - l)
+        approximated_jump_magnitudes[l, 0] = mpm.fmul(c, s)
+    return approximated_jump_magnitudes
 def __closest_root_to_unit_disk(roots):
     if not roots:
         print('root list is empty')
