@@ -20,7 +20,7 @@ def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_
     func_coeff_col_vec = __to_column_vec(func_coeff_array)
     jump_mag_col_vec = __to_column_vec(jump_mag_array)
 
-    m = int(np.floor(func_coeff_col_vec.cols / 2))
+    m = func_coeff_col_vec.rows // 2
     s = 0
     for k in range(-m, m + 1):
         phi_k_coeff = __calc_coeff_phi(k, reconstruction_order=reconstruction_order, jump_loc=jump_loc,
@@ -37,7 +37,7 @@ def func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_
     psi_val = psi_func_val_at_x(x=x, reconstruction_order=reconstruction_order, func_coeff_array=func_coeff_col_vec,
                                 jump_loc=jump_loc, jump_mag_array=jump_mag_col_vec)
     return mpm.fadd(psi_val, phi_val)
-def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=True):
+def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
     coefficients = __create_polynomial_coefficients(reconstruction_order, func_coeff_array, half_order_flag)
     tries = 10
     max_steps = 50
@@ -68,14 +68,15 @@ def approximate_jump_location(reconstruction_order, func_coeff_array,
         return -mpm.pi
     else:
         func_coeff_col_vec = __to_column_vec(func_coeff_array)
+        m = func_coeff_col_vec.rows // 2
+        d = reconstruction_order // 2
         if half_order_flag:
-            closest_root = __closest_root_to_unit_disk(poly_roots(reconstruction_order, func_coeff_col_vec, half_order_flag=True))
+            roots = poly_roots(reconstruction_order, func_coeff_col_vec, half_order_flag=True)
+            closest_root = __closest_root_to_unit_disk(roots)
             approximated_jump_location = -mpm.arg(closest_root)
             return approximated_jump_location
         else:
-            m = func_coeff_col_vec.cols // 2
-            d = reconstruction_order // 2
-            half_order_root = approximate_jump_location(d, func_coeff_array,known_jump_location_flag_on=False,
+            half_order_root = approximate_jump_location(d, func_coeff_col_vec,known_jump_location_flag_on=False,
                                                         half_order_flag=True)
             half_order_omega = mpm.exp(mpm.fmul(-1j,half_order_root))
             n = m // (reconstruction_order + 2)
@@ -124,7 +125,7 @@ def __closest_root_to_unit_disk(roots):
     if not roots:
         print('root list is empty')
         return 1
-    roots_col_vec = __to_column_vec(roots)
+    roots_col_vec = __to_column_vec(mpm.matrix(roots))
     closest_root_to_unit_disk = roots_col_vec[0,0]
     min_distance_of_root_to_unit_disk = mpm.inf
     for i in range(len(roots)):
@@ -172,9 +173,9 @@ def __create_polynomial_coefficients(reconstruction_order, func_coeff_array, hal
     n = m // (reconstruction_order + 2)
     d = reconstruction_order + 1
 
-    polynom_coefficients = mpm.matrix(d, 1)
+    polynom_coefficients = mpm.matrix(d + 1, 1)
     if half_order_flag:
-        for j in range(d + 1):
+        for j in range(d+1):
             # here maybe an issue with array out of bounds
             index = m - reconstruction_order - 1 + j
             ck = func_coeff_col_vec[m + index, 0]
