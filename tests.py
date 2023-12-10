@@ -7,11 +7,10 @@ from test_functions import TestFunctions
 import constants as const
 
 if __name__ == "__main__":
-    a = [[1,4], 2]
+    a = mpm.matrix([[1],[2],[3],[4]])
     print(a)
-    print(a[0])
-    print(a[1])
-    print(a[1])
+    print(a.rows)
+    print(a[1:, 0])
 
 
 

@@ -10,22 +10,24 @@ from tqdm import tqdm
 
 
 if __name__ == "__main__":
-    x = 2
+    mpm.mp.dps = 25
+    x = 1
     ro = 1
-    tf1 = TestFunctions(func_type=const.FUNC_TYPE_F3)
-    moy = 16
-    mox = moy**2
-    nx = mox
+    psi_jump_loc = -mpm.pi
+    tf1 = TestFunctions(func_type=const.FUNC_TYPE_F2)
+    moy = 10
+    mox = np.power(moy, 2)
     ny = 256
     Y = np.linspace(-const.NP_PI + const.EPS, const.NP_PI, ny)
+    # Y = np.linspace(-const.NP_PI , const.NP_PI - const.EPS, ny)
     func_coeff = mpm.matrix(2 * mox + 1, 1)
     psi_oy_at_x = mpm.matrix(2 * moy + 1, 1)
     f_at_x = mpm.matrix(ny, 1)
     for oy in tqdm(range (-moy, moy + 1)):
         for ox in range(-mox, mox + 1):
-            func_coeff[mox + ox, 0] = tf1.get_func_fourier_coefficient(ox, oy)
-        approx_psi_jump_mag = sj.approximate_jump_magnitudes(reconstruction_order=ro, func_coeff_array=func_coeff, approximated_jump_location=mpm.pi)
-        psi_oy_at_x[oy + moy, 0] = sj.func_val_at_x(x=x, reconstruction_order=ro, func_coeff_array=func_coeff, jump_loc=mpm.pi, jump_mag_array=approx_psi_jump_mag)
+            func_coeff[mox + ox, 0] = tf1.get_func_fourier_coefficient(oy, ox)
+        approx_psi_jump_mag = sj.approximate_jump_magnitudes(reconstruction_order=ro, func_coeff_array=func_coeff, approximated_jump_location=psi_jump_loc)
+        psi_oy_at_x[oy + moy, 0] = sj.func_val_at_x(x=x, reconstruction_order=ro, func_coeff_array=func_coeff, jump_loc=psi_jump_loc, jump_mag_array=approx_psi_jump_mag)
 
     f_coeff = psi_oy_at_x[:, 0]
     approx_f_jump_loc_at_x = sj.approximate_jump_location(reconstruction_order=ro, func_coeff_array=f_coeff, half_order_flag=False)

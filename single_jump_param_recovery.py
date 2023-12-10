@@ -11,9 +11,9 @@ def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
     d = reconstruction_order
     s = 0
     for l in range(d + 1):
-        a_l = jump_mag_col_vec[l, 0]
+        al = jump_mag_col_vec[l, 0]
         vl = __vn_func_val_at_x(x, l, jump_loc)
-        s1 = mpm.fmul(a_l, vl)
+        s1 = mpm.fmul(al, vl)
         s = mpm.fadd(s, s1)
     return s
 def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
@@ -25,8 +25,11 @@ def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_
     for k in range(-m, m + 1):
         phi_k_coeff = __calc_coeff_phi(k, reconstruction_order=reconstruction_order, jump_loc=jump_loc,
                                        jump_mag_array=jump_mag_col_vec)
-        psi_k_coeff = __calc_coeff_psi(func_coeff_at_k=func_coeff_col_vec[m+k, 0], phi_coeff_at_k=phi_k_coeff)
-        s = mpm.fadd(s, mpm.fmul(psi_k_coeff, mpm.expj(mpm.fmul(k, x))))
+        psi_k_coeff = mpm.fsub(func_coeff_col_vec[m + k, 0], phi_k_coeff)
+        s1 = mpm.expj(mpm.fmul(k, x))
+        s2 = mpm.fmul(psi_k_coeff, s1)
+        s3 = mpm.fmul(s1, s2)
+        s = mpm.fadd(s, s3)
     return s
 def func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
     func_coeff_col_vec = __to_column_vec(func_coeff_array)
@@ -65,17 +68,16 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
 def approximate_jump_location(reconstruction_order, func_coeff_array, half_order_flag=False, get_omega_flag=False):
     func_coeff_col_vec = __to_column_vec(func_coeff_array)
     m = func_coeff_col_vec.rows // 2
-    half_order = reconstruction_order // 2
     if half_order_flag:
-        roots = poly_roots(half_order, func_coeff_col_vec, half_order_flag=True)
+        roots = poly_roots(reconstruction_order, func_coeff_col_vec, half_order_flag=True)
         closest_root = __closest_root_to_unit_disk(roots)
         if get_omega_flag:
             return closest_root
         approximated_jump_location = -mpm.arg(closest_root)
         return approximated_jump_location
     else:
-        half_order_root = approximate_jump_location(half_order, func_coeff_col_vec, half_order_flag=True)
-        half_order_omega = mpm.exp(mpm.fmul(-1j, half_order_root))
+        half_order_root = approximate_jump_location(reconstruction_order, func_coeff_col_vec, half_order_flag=True, get_omega_flag=True)
+        # half_order_omega = mpm.exp(mpm.fmul(-1j, half_order_root))
         n = m // (reconstruction_order + 2)
         if n == 0:
             print('M = {} -> floor(M/(d+2)) = 0')
@@ -85,7 +87,7 @@ def approximate_jump_location(reconstruction_order, func_coeff_array, half_order
         min_dist_z_N_and_half_order_root = mpm.inf
         for k in range(n):
             z_k = mpm.root(z_n, n, k=k)
-            current_distance_from_half_order_root_and_z_k = mpm.norm(mpm.fsub(half_order_omega, z_k))
+            current_distance_from_half_order_root_and_z_k = mpm.norm(mpm.fsub(half_order_root, z_k))
             if current_distance_from_half_order_root_and_z_k < min_dist_z_N_and_half_order_root:
                 min_dist_z_N_and_half_order_root = current_distance_from_half_order_root_and_z_k
                 closest_root_to_half_order_root = z_k
@@ -147,14 +149,19 @@ def __to_column_vec(vec):
     else:
         return col_vec
 def __vn_func_val_at_x(x, n, jump_loc):
-    c = mpm.fdiv(-mpm.power(const.TWO_PI, n), mpm.factorial(n + 1))
+    s = -mpm.fdiv(mpm.power(const.TWO_PI, n), mpm.factorial(n + 1))
     z = mpm.fsub(x, jump_loc)
-    zz = 0
     if 0 <= z < const.TWO_PI:
-        s = mpm.fmul(c, mpm.bernpoly(n + 1, mpm.fdiv(z, const.TWO_PI)))
-    else: # -const.TWO_PI <= z < 0:
-        s = mpm.fmul(c, mpm.bernpoly(n + 1, mpm.fdiv(mpm.fadd(z, const.TWO_PI), const.TWO_PI)))
-    return s
+        s1 = mpm.fdiv(z, const.TWO_PI)
+        s2 = mpm.bernpoly(n + 1, s1)
+        return mpm.fmul(s, s2)
+    elif -const.TWO_PI <= z < 0:
+        s1 = mpm.fadd(z, const.TWO_PI)
+        s2 = mpm.fdiv(s1, const.TWO_PI)
+        s3 = mpm.bernpoly(n + 1, s2)
+        return mpm.fmul(s, s3)
+    else:
+        return -mpm.inf
 def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
     jump_mag_col_vec = __to_column_vec(jump_mag_array)
     if k==0:
@@ -165,28 +172,27 @@ def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
         for l in range(reconstruction_order + 1):
             r3 = mpm.fdiv(jump_mag_col_vec[l, 0], mpm.power(mpm.fmul(1j, k), l + 1))
             r2 = mpm.fadd(r2, r3)
-        return mpm.fmul(r1, 2)
+        return mpm.fmul(r1, r2)
 def __calc_coeff_psi(func_coeff_at_k, phi_coeff_at_k):
     return mpm.fsub(func_coeff_at_k, phi_coeff_at_k)
-def __create_polynomial_coefficients(reconstruction_order, func_coeff_array, half_order_flag=True):
-    func_coeff_col_vec = __to_column_vec(func_coeff_array)
+def __create_polynomial_coefficients(reconstruction_order, func_coeff_col_vec, half_order_flag=True):
     m = func_coeff_col_vec.rows // 2
-    n = m // (reconstruction_order + 2)
-    d = reconstruction_order + 1
-
-    polynom_coefficients = mpm.matrix(d + 2, 1)
     if half_order_flag:
-        for j in range(d+2):
-            # here maybe an issue with array out of bounds
-            k = m - reconstruction_order - 1
-            ck = func_coeff_col_vec[m + k + j, 0]
-            mk_tilde_val = mpm.fmul(mpm.fmul(const.TWO_PI, mpm.power(mpm.fmul(1j,k+j),reconstruction_order + 1)), ck)
+        half_order = reconstruction_order // 2
+        coefficients = func_coeff_col_vec[2*m - half_order - 1 : , 0]
+        polynom_coefficients = mpm.matrix(half_order + 2, 1)
+        for j in range(half_order+2):
+            k = m - half_order - 1
+            ck = coefficients[j, 0]
+            mk_tilde_val = mpm.fmul(mpm.fmul(const.TWO_PI, mpm.power(mpm.fmul(1j,k+j),half_order + 1)), ck)
             polynom_coefficients[j, 0] = mpm.fmul(mpm.fmul(mpm.power(-1, j), mpm.binomial(reconstruction_order + 1, j)), mk_tilde_val)
         return polynom_coefficients
     else:
-        for j in range(d + 1):
-            index = (j+1) * n
-            ck = func_coeff_col_vec[m + index, 0]
-            mk_tilde_val = mpm.fmul(mpm.fmul(const.TWO_PI, mpm.power(mpm.fmul(1j,index),reconstruction_order + 1)), ck)
+        n = m // (reconstruction_order + 2)
+        polynom_coefficients = mpm.matrix(reconstruction_order + 2, 1)
+        for j in range(reconstruction_order + 2):
+            k = (j+1) * n
+            ck = func_coeff_col_vec[m + k, 0]
+            mk_tilde_val = mpm.fmul(mpm.fmul(const.TWO_PI, mpm.power(mpm.fmul(1j,k),reconstruction_order + 1)), ck)
             polynom_coefficients[j, 0] = mpm.fmul(mpm.fmul(mpm.power(-1, j), mpm.binomial(reconstruction_order + 1, j)), mk_tilde_val)
         return  polynom_coefficients
