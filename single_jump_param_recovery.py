@@ -65,16 +65,16 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
 def approximate_jump_location(reconstruction_order, func_coeff_array, half_order_flag=False, get_omega_flag=False):
     func_coeff_col_vec = __to_column_vec(func_coeff_array)
     m = func_coeff_col_vec.rows // 2
-    d = reconstruction_order // 2
+    half_order = reconstruction_order // 2
     if half_order_flag:
-        roots = poly_roots(reconstruction_order, func_coeff_col_vec, half_order_flag=True)
+        roots = poly_roots(half_order, func_coeff_col_vec, half_order_flag=True)
         closest_root = __closest_root_to_unit_disk(roots)
         if get_omega_flag:
             return closest_root
         approximated_jump_location = -mpm.arg(closest_root)
         return approximated_jump_location
     else:
-        half_order_root = approximate_jump_location(d, func_coeff_col_vec, half_order_flag=True)
+        half_order_root = approximate_jump_location(half_order, func_coeff_col_vec, half_order_flag=True)
         half_order_omega = mpm.exp(mpm.fmul(-1j, half_order_root))
         n = m // (reconstruction_order + 2)
         if n == 0:
