@@ -18,8 +18,8 @@ if __name__ == "__main__":
     moy = 10
     mox = np.power(moy, 2)
     ny = 256
-    Y = np.linspace(-const.NP_PI + const.EPS, const.NP_PI, ny)
-    # Y = np.linspace(-const.NP_PI , const.NP_PI - const.EPS, ny)
+    # Y = np.linspace(-const.NP_PI + const.EPS, const.NP_PI, ny)
+    Y = np.linspace(-const.NP_PI , const.NP_PI - const.EPS, ny)
     func_coeff = mpm.matrix(2 * mox + 1, 1)
     psi_oy_at_x = mpm.matrix(2 * moy + 1, 1)
     f_at_x = mpm.matrix(ny, 1)
