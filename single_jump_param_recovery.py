@@ -87,17 +87,17 @@ def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approxim
     if known_jump_loc:
         omega = -1
     else:
-        omega = mpm.expj(-1*approximated_jump_location)
+        omega = mpm.expj(-approximated_jump_location)
     m = func_coeff_array.rows // 2
     n = m // (reconstruction_order + 2)
-    b = mpm.matrix(reconstruction_order + 1, 1)
+
     VNd = mpm.matrix(reconstruction_order + 1, reconstruction_order + 1)
     approximated_jump_magnitudes = mpm.matrix(reconstruction_order + 1, 1)
-
+    # creating b
+    b = mpm.matrix(reconstruction_order + 1, 1)
     for i in range( reconstruction_order + 1):
-        # creating b
         index = (i + 1) * n
-        mk_val = __mk(ro=reconstruction_order, k=m+index, ck=func_coeff_array[m + index, 0])
+        mk_val = __mk(ro=reconstruction_order, k=index, ck=func_coeff_array[m + index, 0])
         try:
             b[i, 0] = mpm.fmul(mk_val, mpm.power(omega, -index))
         except ZeroDivisionError:
@@ -124,8 +124,8 @@ def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approxim
         # sol = [alpha_0,..., alpha_d]
         # s = alpha_d -> alpha_0
         s = sol[reconstruction_order - l]
-        c = mpm.power(-1j, reconstruction_order - l)
-        approximated_jump_magnitudes[l, 0] = mpm.fmul(c, s)
+        c = mpm.power(1j, reconstruction_order - l)
+        approximated_jump_magnitudes[l, 0] = mpm.fdiv(s, c)
     return approximated_jump_magnitudes
 def __closest_root_to_unit_disk(roots):
     m = len(roots)
@@ -144,32 +144,33 @@ def __closest_root_to_unit_disk(roots):
                 closest_root_to_unit_disk = root
     return closest_root_to_unit_disk
 def __vn_func_val_at_x(x, n, jump_loc):
-    s = -mpm.fdiv(mpm.power(const.TWO_PI, n), mpm.factorial(n + 1))
+    a1 = mpm.power(const.TWO_PI, n)
+    a2 = mpm.factorial(n+1)
+    a3 = -mpm.fdiv(a1, a2)
     z = mpm.fsub(x, jump_loc)
     if 0 <= z < const.TWO_PI:
-        s1 = mpm.fdiv(z, const.TWO_PI)
-        s2 = mpm.bernpoly(n + 1, s1)
-        return mpm.fmul(s, s2)
+        zz = mpm.fdiv(z, const.TWO_PI)
     elif -const.TWO_PI <= z < 0:
-        s1 = mpm.fadd(z, const.TWO_PI)
-        s2 = mpm.fdiv(s1, const.TWO_PI)
-        s3 = mpm.bernpoly(n + 1, s2)
-        return mpm.fmul(s, s3)
+        zz = mpm.fdiv(mpm.fadd(z, const.TWO_PI), const.TWO_PI)
     else:
         return -mpm.inf
+    a4 = mpm.bernpoly(n + 1, zz)
+    s = mpm.fmul(a3, a4)
+    return s
 def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
-    if k==0:
-        return 0
-    else:
-        r1 = mpm.fdiv(mpm.expj(-1*mpm.fmul(jump_loc, k)), const.TWO_PI)
+    if k!=0:
+        omega = mpm.expj(-mpm.fmul(jump_loc, k))
+        c = mpm.fdiv(omega, const.TWO_PI)
         r = 0
         for l in range(reconstruction_order + 1):
             al = jump_mag_array[l, 0]
-            r2 = mpm.fmul(1j, k)
-            r3 = mpm.power(r2, l + 1)
-            r4 = mpm.fdiv(al, r3)
-            r = mpm.fadd(r, r4)
-        return mpm.fmul(r1, r)
+            r1 = mpm.fmul(1j, k)
+            r2 = mpm.power(r1, l + 1)
+            r3 = mpm.fdiv(al, r2)
+            r = mpm.fadd(r, r3)
+        return mpm.fmul(c, r)
+    else:
+        return 0
 def __mk(ro, k, ck):
     a1 = mpm.power(mpm.fmul(1j, k), ro + 1)
     a2 = mpm.fmul(a1, ck)

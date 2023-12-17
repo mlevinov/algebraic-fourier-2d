@@ -11,15 +11,15 @@ from tqdm import tqdm
 
 if __name__ == "__main__":
     mpm.mp.dps = 25
-    x = -1.25
-    ro = 2
+    x = -1.4
+    ro = 5
     psi_jump_loc = -const.MP_PI
-    tf1 = TestFunctions(func_type=const.FUNC_TYPE_F2)
-    moy = 16
+    tf1 = TestFunctions(func_type=const.FUNC_TYPE_F3)
+    moy = 20
     mox = np.power(moy, 2)
     ny = 256
-    Y = np.linspace(-const.NP_PI + const.EPS, const.NP_PI, ny)
-    # Y = np.linspace(-const.NP_PI , const.NP_PI - const.EPS, ny)
+    # Y = np.linspace(-const.NP_PI + const.EPS, const.NP_PI, ny)
+    Y = np.linspace(-const.NP_PI , const.NP_PI - const.EPS, ny)
     func_coeff = mpm.matrix(2 * mox + 1, 1)
     psi_oy_at_x = mpm.matrix(2 * moy + 1, 1)
     f_at_x = mpm.matrix(ny, 1)
@@ -33,9 +33,15 @@ if __name__ == "__main__":
                                                     jump_loc=psi_jump_loc, jump_mag_array=approx_psi_jump_mag)
     approx_f_jump_loc_at_x = sj.approximate_jump_location(reconstruction_order=ro, func_coeff_array=psi_oy_at_x, half_order_flag=False)
     print(approx_f_jump_loc_at_x)
-    approx_f_jump_mag_at_x = sj.approximate_jump_magnitudes(reconstruction_order=ro, func_coeff_array=psi_oy_at_x, approximated_jump_location=approx_f_jump_loc_at_x)
-    for iy in tqdm(range(ny)):
-        f_at_x[iy, 0] = sj.func_val_at_x(Y[iy], reconstruction_order=ro, func_coeff_array=psi_oy_at_x, jump_loc=approx_f_jump_loc_at_x, jump_mag_array=approx_f_jump_mag_at_x)
-    YY = mpt.mpm_matrix_to_mpmath_numpy_array(f_at_x)
-    plt.plot(Y, np.real(YY[:, 0]))
-    plt.show()
+    approx_f_jump_mag_at_x = sj.approximate_jump_magnitudes(reconstruction_order=ro, func_coeff_array=psi_oy_at_x,
+                                                            approximated_jump_location=approx_f_jump_loc_at_x, known_jump_loc=False)
+    print()
+    print(approx_f_jump_mag_at_x)
+    # for iy in tqdm(range(ny)):
+    #     f_at_x[iy, 0] = sj.func_val_at_x(Y[iy], reconstruction_order=ro, func_coeff_array=psi_oy_at_x, jump_loc=approx_f_jump_loc_at_x, jump_mag_array=approx_f_jump_mag_at_x)
+    # YY = mpt.mpm_matrix_to_mpmath_numpy_array(f_at_x)
+    # plt.plot(Y, np.real(YY[:, 0]))
+    # plt.show()
+    def f(y):
+        return sj.func_val_at_x(x=y, reconstruction_order=ro, func_coeff_array=psi_oy_at_x, jump_loc=approx_f_jump_loc_at_x, jump_mag_array=approx_f_jump_mag_at_x)
+    mpm.plot(f, xlim=[-mpm.pi, mpm.pi], points=ny, singularities=[approx_f_jump_loc_at_x])
