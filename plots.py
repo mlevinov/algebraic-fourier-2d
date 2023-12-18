@@ -60,14 +60,26 @@ def plot_approximation_of_f_and_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde,
     ax.set_ylabel('y')
     ax.view_init(15, 280)
     plt.show()
+def plot_err_in_f_at_x_vs_moy(x, Y, f_tilde_at_x, exact_f_at_x):
+    return 0
 
 if __name__ == "__main__":
     mpm.mp=25
-    func_type = const.FUNC_TYPE_F2
 
+    #################### Error in F_x vs Moy ####################
+    func_type = const.FUNC_TYPE_F2
+    x = 1
+    ny = 64
+    Y = np.linspace(-const.NP_PI, const.NP_PI - const.EPS, ny)
+    #################### Error in xi vs Moy ####################
+
+    #################### Error in A_l vs Moy ####################
+
+    #################### Exact F vs xi ####################
     print()
     print('##### creating exact f #####')
     print()
+    func_type = const.FUNC_TYPE_F2
     nx = 64
     ny = 64
     X = np.linspace(-const.NP_PI, const.NP_PI - const.EPS, nx)
@@ -76,9 +88,11 @@ if __name__ == "__main__":
     func_val = tf.get_func_val(X, Y)
     plot_f_and_jump_curve(X, Y, func_val, test_func_type=tf.get_func_type())
 
+    ####################  F_tilde vs xi_tilde ####################
     print()
     print('##### creating psi #####')
     print()
+    func_type = const.FUNC_TYPE_F2
     nx = 16
     ny = 16
     X = np.linspace(-const.NP_PI, const.NP_PI - const.EPS, nx)
