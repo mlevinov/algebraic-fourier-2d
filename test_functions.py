@@ -10,6 +10,22 @@ class TestFunctions:
     def __init__(self, dps=const.DEFAULT_DPS, func_type=const.FUNC_TYPE_F1):
         self.dps = dps
         self.func_type = func_type
+        if func_type == const.FUNC_TYPE_F1:
+            self.smoothness_order = const.F1_SMOOTHNESS_ORDER
+        else:
+            self.smoothness_order = const.F2_F3_SMOOTHNESS_ORDER
+    def get_jump_magnitudes_at_x(self, x):
+        if self.func_type == const.FUNC_TYPE_F1:
+            jump_magnitudes = mpm.matrix(const.F1_SMOOTHNESS_ORDER + 1, 1)
+            for l in range(const.F1_SMOOTHNESS_ORDER + 1):
+                jump_magnitudes[l, 0] = mpm.fmul(mpm.fdiv(x, const.MP_PI), mpm.fdiv(1, l + 1))
+                return jump_magnitudes
+        else:
+            return mpm.ones(const.F2_F3_SMOOTHNESS_ORDER + 1, 1)
+    def get_func_type(self):
+        return self.func_type
+    def get_smoothness_order(self):
+        return self.smoothness_order
     def get_func_val_at_point(self, x, y):
         if self.func_type == const.FUNC_TYPE_F1:
             return self.__get_func_type_1_val_at_point(x, y)
@@ -19,30 +35,24 @@ class TestFunctions:
             return self.__get_func_type_3_val_at_point(x, y)
     def __get_func_type_1_val_at_point(self, x, y):
         new_x = mpm.fsub(y, x)
-        jump_magnitudes = mpm.matrix(1, const.F1_SMOOTHNESS_ORDER + 1)
-        for l in range(const.F1_SMOOTHNESS_ORDER + 1):
-            a1 = mpm.fdiv(x, mpm.pi)
-            a2 = mpm.fdiv(1, mpm.fadd(l, 1))
-            a3 = mpm.fmul(a1, a2)
-            jump_magnitudes[0, l] = a3
-
+        jump_magnitudes = self.get_jump_magnitudes_at_x(x)
         s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F1_SMOOTHNESS_ORDER,
-                                   jump_loc=const.DEFAULT_JUMP_LOC, jump_mag=jump_magnitudes)
+                                   jump_loc=const.DEFAULT_JUMP_LOC, jump_mag_array=jump_magnitudes)
         return s
     def __get_func_type_2_val_at_point(self, x, y):
         new_x = mpm.fsub(y, x)
-        jump_magnitudes = mpm.matrix(1, const.F2_SMOOTHNESS_ORDER + 1)
-        for l in range(const.F2_SMOOTHNESS_ORDER + 1):
-            jump_magnitudes[0, l] = 1
-        s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F2_SMOOTHNESS_ORDER,
-                                   jump_loc=const.DEFAULT_JUMP_LOC, jump_mag=jump_magnitudes)
+        jump_magnitudes = self.get_jump_magnitudes_at_x(x)
+        s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F2_F3_SMOOTHNESS_ORDER,
+                                   jump_loc=const.DEFAULT_JUMP_LOC, jump_mag_array=jump_magnitudes)
         return s
     def __get_func_type_3_val_at_point(self, x, y):
         new_x = mpm.fsub(y, mpm.fdiv(x, 2))
-        jump_magnitudes = mpm.matrix(1, const.F3_SMOOTHNESS_ORDER + 1)
-        for l in range(const.F3_SMOOTHNESS_ORDER + 1):
-            jump_magnitudes[0, l] = 1
-        s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F3_SMOOTHNESS_ORDER,jump_loc=const.DEFAULT_JUMP_LOC,jump_mag=jump_magnitudes)
+        jump_magnitudes = self.get_jump_magnitudes_at_x(x)
+        # jump_magnitudes = mpm.matrix(1, const.F2_F3_SMOOTHNESS_ORDER + 1)
+        # for l in range(const.F2_F3_SMOOTHNESS_ORDER + 1):
+        #     jump_magnitudes[0, l] = 1
+        s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F2_F3_SMOOTHNESS_ORDER,jump_loc=const.DEFAULT_JUMP_LOC,
+                                   jump_mag_array=jump_magnitudes)
         return s
     def get_func_slice_at_x(self, x, Y):
         # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
@@ -58,10 +68,18 @@ class TestFunctions:
         ny = len(Y)
         nx = len(X)
         func_val = mpm.matrix(ny, nx)
-        if X.cols != 1:
-            X = X.T
-        if Y.cols != 1:
-            Y = Y.T
+        try:
+            if X.cols != 1:
+                X = X.T
+            if Y.cols != 1:
+                Y = Y.T
+        except AttributeError:
+            print('assuming X and Y are numpy ndarray type')
+            YY = mpm.matrix(Y)
+            XX = mpm.matrix(X)
+            for ix in range(nx):
+                func_val[:, ix] = self.get_func_slice_at_x(XX[ix, 0], YY)
+            return func_val
         for ix in range(nx):
             func_val[:, ix] = self.get_func_slice_at_x(X[ix, 0], Y)
         return func_val
