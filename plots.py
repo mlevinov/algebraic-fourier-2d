@@ -105,7 +105,7 @@ def plot_err_in_f_at_x_vs_moy(x, moy_vals, reconstruction_order, err_f_tilde_at_
     #     plt.show()
 
 if __name__ == "__main__":
-    mpm.mp=35
+    mpm.mp=25
 
     #################### Error in F_x vs Moy ####################
     func_type = const.FUNC_TYPE_F2
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     x = 1
     strt_moy_val = 15
     num_of_moy_vals = 10
-    inc_moy = 5
+    inc_moy = 2
     reconstruction_order = 1
     end_moy_val = strt_moy_val + (num_of_moy_vals * inc_moy)
     psi_jump_loc = -const.MP_PI

@@ -57,10 +57,10 @@ def elementwise_norm_matrix(mp_arr1, mp_arr2):
         except ValueError as ve:
             print('incompatible dimensions for subtraction, trying transposing')
             norm_mat = mp_arr1 - mp_arr2.T
+            print('transposing worked, continuing\n')
     except ValueError as ve:
         print(ve)
         exit(1)
-    print('transposing worked, continuing\n')
     rows = norm_mat.rows
     cols = norm_mat.cols
     for r in range(rows):
