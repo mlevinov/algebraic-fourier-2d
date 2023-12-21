@@ -73,7 +73,7 @@ def plot_err_in_f_at_x_vs_moy(x, moy_vals, reconstruction_order, err_f_tilde_at_
     np_delta_fourier = mpt.mpm_matrix_to_mpmath_numpy_array(err_fourier_f_at_x)
     # plotting:
     t0 = r'$\Delta f_x$ vs $\Delta\mathcal{T}(f_x)$ vs $M_{\omega_y}$'
-    t1 = r'$d=%d,\;x=%f$' % (reconstruction_order, x)
+    t1 = r'$d=%d,\;x=%g$' % (reconstruction_order, x)
 
     plt.title(t0 + '\n' + t1)
     plt.plot(np_moy_vals, np_rate_of_decay, '^-.', label=r'$M_{\omega_y}^{-%d}$' % (reconstruction_order + 2))
@@ -110,19 +110,19 @@ if __name__ == "__main__":
     #################### Error in F_x vs Moy ####################
     func_type = const.FUNC_TYPE_F2
     tf = TestFunctions(func_type)
-    ny = 64
+    ny = 8
     Y = np.linspace(-const.NP_PI, const.NP_PI - const.EPS, ny)
-    x = 1
+    x = 1.13
     strt_moy_val = 15
-    num_of_moy_vals = 10
+    num_of_moy_vals = 2
     inc_moy = 2
     reconstruction_order = 1
     end_moy_val = strt_moy_val + (num_of_moy_vals * inc_moy)
     psi_jump_loc = -const.MP_PI
     exact_f_at_x = tf.get_func_slice_at_x(x=x, Y=Y)
     moy_vals = []
-    max_err_f_tilde = mpm.matrix(num_of_moy_vals, 1)
-    max_err_f_fourier = mpm.matrix(num_of_moy_vals, 1)
+    max_err_f_tilde = mpm.matrix(num_of_moy_vals + 1, 1)
+    max_err_f_fourier = mpm.matrix(num_of_moy_vals + 1, 1)
     # approximating f and its truncated Fourier sum for different values of moy
     for i, moy in tqdm(enumerate(range(strt_moy_val, end_moy_val+1, inc_moy))):
         moy_vals.append(moy)
@@ -154,12 +154,16 @@ if __name__ == "__main__":
                                                    jump_mag_array=approx_f_jump_mag_at_x)
         # find max err
         err_f_tilde_at_x = mpt.elementwise_norm_matrix(exact_f_at_x, f_tilde_at_x)
-        index = mpt.find_max_val_index(err_f_tilde_at_x)
-        max_err_f_tilde[i, 0] = err_f_tilde_at_x[index[0], index[1]]
+        max_err_f_tilde[i, 0] = err_f_tilde_at_x[mpt.find_max_val_index(err_f_tilde_at_x)[0], 0]
         err_fourier_f_at_x = mpt.elementwise_norm_matrix(exact_f_at_x, fourier_f_at_x)
-        index = mpt.find_max_val_index(err_fourier_f_at_x)
-        max_err_f_fourier[i, 0] = err_fourier_f_at_x[index[0], index[1]]
-
+        max_err_f_fourier[i, 0] = err_fourier_f_at_x[mpt.find_max_val_index(err_fourier_f_at_x)[0], 0]
+    max_max_err_f_tilde = max_err_f_tilde[mpt.find_max_val_index(max_err_f_tilde)[0], 0]
+    max_max_err_f_fourier = max_err_f_fourier[mpt.find_max_val_index(max_err_f_fourier)[0], 0]
+    print('max_max_err_f_tilde:\n{}'.format(max_max_err_f_tilde))
+    print()
+    print('max_max_err_f_fourier\n{}'.format(max_max_err_f_fourier))
+    plot_err_in_f_at_x_vs_moy(x=x, moy_vals=mpm.matrix(moy_vals), reconstruction_order=reconstruction_order,
+                              err_f_tilde_at_x = max_err_f_tilde, err_fourier_f_at_x=max_err_f_fourier)
     #################### Error in xi vs Moy ####################
 
     #################### Error in A_l vs Moy ####################
