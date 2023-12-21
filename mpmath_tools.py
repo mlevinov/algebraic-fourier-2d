@@ -17,21 +17,21 @@ def mpm_matrix_to_mpmath_numpy_array(mpmath_arr):
         return np.array(mpmath_arr.tolist(), dtype=mat_type)
 def find_max_val_index(mpmath_arr):
     np_arr = mpm_matrix_to_mpmath_numpy_array(mpmath_arr)
-    ind = np_arr.unravel_index(np.argmax(np_arr, axis=None), np_arr.shape)
+    ind = np.unravel_index(np.argmax(np_arr, axis=None), np_arr.shape)
     # TODO: returning a tuple of max_val_index, consider returning separately ind[0], ind[1]
     return ind
 def find_min_val_index(mpmath_arr):
     np_arr = mpm_matrix_to_mpmath_numpy_array(mpmath_arr)
-    ind = np_arr.unravel_index(np.argmin(np_arr, axis=None), np_arr.shape)
+    ind = np.unravel_index(np.argmin(np_arr, axis=None), np_arr.shape)
     # TODO: returning a tuple of max_val_index, consider returning separately ind[0], ind[1]
     return ind
-def _mpmath_num_to_numpy(mpmath_num):
+def mpmath_num_to_numpy(mpmath_num):
     if isinstance(mpmath_num, mpm.mpf):
         s = float(mpm.nstr(mpmath_num, mpm.mp.dps))
         return s
     elif isinstance(mpmath_num, mpm.mpc):
-        re = mpm.nstr(mpm.re(mpmath_num), mpm.mp.dps)
-        im = mpm.nstr(mpm.im(mpmath_num), mpm.mp.dps)
+        re = mpm.nstr(mpm.re(mpmath_num), n=mpm.mp)
+        im = mpm.nstr(mpm.im(mpmath_num), n=mpm.mp)
         s = complex(float(re), float(im))
         return s
     elif isinstance(mpmath_num, float) or isinstance(mpmath_num, complex) or isinstance(mpmath_num, int):
@@ -67,7 +67,6 @@ def elementwise_norm_matrix(mp_arr1, mp_arr2):
         for c in range(cols):
             norm_mat[r, c] = mpm.norm(norm_mat[r, c], p=2)
     return norm_mat
-
 
 if __name__ == '__main__':
     mp_mat1 = mpm.randmatrix(1,3)

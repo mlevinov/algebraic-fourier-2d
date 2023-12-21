@@ -8,8 +8,13 @@ import constants as const
 from tqdm import tqdm
 from mpmath_tools import mpm_matrix_to_mpmath_numpy_array as mp_mat_to_np_mat
 if __name__ == "__main__":
-    a = mpm.ones(2,1)
-    print(a)
+    print(mpm.mp)
+    print(mpm.mp.dps)
+    x = mpm.pi + 1j*5
+    print(x)
+    # s = mpm.nstr(x, 15)
+    # print(s)
+
 
 
 

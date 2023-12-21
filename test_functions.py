@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import single_jump_param_recovery as sjpr
 from tqdm import tqdm
 import constants as const
+import mpmath_tools as mpt
 
 
 class TestFunctions:
@@ -58,11 +59,17 @@ class TestFunctions:
         # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
         ny = len(Y)
         func_values_at_x = mpm.matrix(ny, 1)
-        if Y.cols != 1:
-            Y = Y.T
-        for iy in range(ny):
-            func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy, 0])
-        return func_values_at_x
+        try:
+            if Y.cols != 1:
+                Y = Y.T
+            for iy in range(ny):
+                func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy, 0])
+            return func_values_at_x
+        except AttributeError:
+            print('assuming Y is a numpy array')
+            for iy in range(ny):
+                func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy])
+            return func_values_at_x
     def get_func_val(self, X, Y):
         # assuming Y and X are column mpmath vectors (of order n * 1 and m * 1 respectively)
         ny = len(Y)
@@ -84,7 +91,7 @@ class TestFunctions:
             func_val[:, ix] = self.get_func_slice_at_x(X[ix, 0], Y)
         return func_val
     def get_func_discontinuity_curve(self, nx=64):
-        X = np.linspace(-np.pi + const.eps, np.pi, nx)
+        X = np.linspace(-np.pi + const.EPS, np.pi, nx)
         if self.func_type == const.FUNC_TYPE_F1 or self.func_type == const.FUNC_TYPE_F2:
             return X
         else:
@@ -169,3 +176,17 @@ class TestFunctions:
                 b = mpm.fmul(mpm.power(oy, 12), mpm.fmul(2, mpm.pi))
                 s = mpm.fdiv(a6, b)
                 return s
+    def compute_1D_fourier_at_x(self, x, Y, mox, moy, func_type):
+        z = np.zeros(shape=Y.shape, dtype=complex)
+        x_arr = np.full(Y.shape, x)
+        for ox in range(-mox, mox + 1):
+            for oy in range(-moy, moy + 1):
+                if func_type == const.FUNC_TYPE_F1:
+                    cmn = mpt.mpmath_num_to_numpy(self.__get_fourier_func_type_1_coefficient(ox, oy))
+                elif func_type == const.FUNC_TYPE_F2:
+                    cmn = mpt.mpmath_num_to_numpy(self.__get_fourier_func_type_2_coefficient(ox, oy))
+                # func_type = 3
+                else:
+                    cmn = mpt.mpmath_num_to_numpy(self.__get_fourier_func_type_3_coefficient(ox, oy))
+                z += cmn * np.exp(1j * (ox * x_arr + oy * Y))
+        return mpt.numpy_array_to_mpmath_matrix(z)
