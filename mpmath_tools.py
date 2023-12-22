@@ -5,6 +5,8 @@ import constants as const
 
 def numpy_array_to_mpmath_matrix(np_arr):
     return mpm.matrix(np_arr.tolist())
+
+
 def mpm_matrix_to_mpmath_numpy_array(mpmath_arr):
     if isinstance(mpmath_arr, np.ndarray):
         return mpmath_arr
@@ -15,16 +17,22 @@ def mpm_matrix_to_mpmath_numpy_array(mpmath_arr):
     else:
         mat_type = _check_type_of_mpmath_matrix(mpmath_arr)
         return np.array(mpmath_arr.tolist(), dtype=mat_type)
+
+
 def find_max_val_index(mpmath_arr):
     np_arr = mpm_matrix_to_mpmath_numpy_array(mpmath_arr)
     ind = np.unravel_index(np.argmax(np_arr, axis=None), np_arr.shape)
     # TODO: returning a tuple of max_val_index, consider returning separately ind[0], ind[1]
     return ind
+
+
 def find_min_val_index(mpmath_arr):
     np_arr = mpm_matrix_to_mpmath_numpy_array(mpmath_arr)
     ind = np.unravel_index(np.argmin(np_arr, axis=None), np_arr.shape)
     # TODO: returning a tuple of max_val_index, consider returning separately ind[0], ind[1]
     return ind
+
+
 def mpmath_num_to_numpy(mpmath_num):
     if isinstance(mpmath_num, mpm.mpf):
         s = float(mpm.nstr(mpmath_num, mpm.mp.dps))
@@ -39,6 +47,8 @@ def mpmath_num_to_numpy(mpmath_num):
     else:
         print('not an mpmath number type')
         return 1
+
+
 def _check_type_of_mpmath_matrix(mpmath_mat):
     if not isinstance(mpmath_mat, mpm.matrix):
         print('not an mpmath matrix')
@@ -50,6 +60,8 @@ def _check_type_of_mpmath_matrix(mpmath_mat):
             if isinstance(mpmath_mat[r, c], mpm.mpc):
                 return complex
     return float
+
+
 def elementwise_norm_matrix(mp_arr1, mp_arr2):
     try:
         try:
@@ -68,13 +80,3 @@ def elementwise_norm_matrix(mp_arr1, mp_arr2):
             norm_mat[r, c] = mpm.fabs(norm_mat[r, c])
     return norm_mat
 
-if __name__ == '__main__':
-    mp_mat1 = mpm.randmatrix(1,3)
-    mp_mat2 = mpm.randmatrix(3, 1)
-
-    print(mp_mat1)
-    print()
-    print(mp_mat2)
-    print()
-    diff_mat = elementwise_norm_matrix(mp_mat1, mp_mat2)
-    print(diff_mat)

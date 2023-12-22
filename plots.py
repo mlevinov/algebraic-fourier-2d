@@ -216,10 +216,10 @@ if __name__ == "__main__":
     ny = 8
     Y = np.linspace(-const.NP_PI, const.NP_PI - const.EPS, ny)
     x = 1.1
-    strt_moy_val = 10
-    num_of_moy_vals = 19
-    inc_moy = 10
     reconstruction_order = 4
+    strt_moy_val = 20
+    num_of_moy_vals = 9
+    inc_moy = 10
     end_moy_val = strt_moy_val + (num_of_moy_vals * inc_moy)
     psi_jump_loc = -const.MP_PI
     exact_f_at_x = tf.get_func_slice_at_x(x=x, Y=Y)

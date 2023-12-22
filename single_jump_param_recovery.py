@@ -4,8 +4,11 @@ import numpy as np
 import constants as const
 from mpmath import libmp
 
+
 def set_mpmath_precision(dps=20):
-    mpm.mp.dps=dps
+    mpm.mp.dps = dps
+
+
 def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
     d = reconstruction_order
     s = 0
@@ -15,6 +18,8 @@ def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
         s1 = mpm.fmul(al, vl)
         s = mpm.fadd(s, s1)
     return s
+
+
 def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
     m = func_coeff_array.rows // 2
     s = 0
@@ -26,12 +31,16 @@ def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_
         s2 = mpm.fmul(psi_k_coeff, s1)
         s = mpm.fadd(s, s2)
     return s
+
+
 def func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
     phi_val = phi_func_val_at_x(x=x, reconstruction_order=reconstruction_order, jump_loc=jump_loc,
                                 jump_mag_array=jump_mag_array)
     psi_val = psi_func_val_at_x(x=x, reconstruction_order=reconstruction_order, func_coeff_array=func_coeff_array,
                                 jump_loc=jump_loc, jump_mag_array=jump_mag_array)
     return mpm.fadd(psi_val, phi_val)
+
+
 def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
     coefficients = __create_polynomial_coefficients(reconstruction_order, func_coeff_array, half_order_flag)
     tries = 10
@@ -57,6 +66,8 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
         # raise NoRootConvergenceError(tries, max_steps, extra_prec)
         print('')
     return polynomial_roots
+
+
 def approximate_jump_location(reconstruction_order, func_coeff_array, half_order_flag=False, get_omega_flag=False):
     m = func_coeff_array.rows // 2
     if half_order_flag:
@@ -109,7 +120,7 @@ def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approxim
             print('notice that the results would lose accuracy')
             print()
             if i > 0:
-                b[i, 0] = b[i-1, 0]
+                b[i, 0] = b[i - 1, 0]
             else:
                 b[i, 0] = 0
         # continue to create row i in VNd
@@ -129,6 +140,8 @@ def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approxim
         c = mpm.power(1j, reconstruction_order - l)
         approximated_jump_magnitudes[l, 0] = mpm.fdiv(s, c)
     return approximated_jump_magnitudes
+
+
 def __closest_root_to_unit_disk(roots):
     m = len(roots)
     if not roots:
@@ -139,15 +152,17 @@ def __closest_root_to_unit_disk(roots):
     for i in range(m):
         root = roots[i]
         if root != 0:
-            normalized_root = mpm.fdiv(root,mpm.norm(root))
+            normalized_root = mpm.fdiv(root, mpm.norm(root))
             current_distance_of_root_to_unit_disk = mpm.fabs(mpm.fsub(root, normalized_root))
             if current_distance_of_root_to_unit_disk < min_distance_of_root_to_unit_disk:
                 min_distance_of_root_to_unit_disk = current_distance_of_root_to_unit_disk
                 closest_root_to_unit_disk = root
     return closest_root_to_unit_disk
+
+
 def __vn_func_val_at_x(x, n, jump_loc):
     a1 = mpm.power(const.TWO_PI, n)
-    a2 = mpm.factorial(n+1)
+    a2 = mpm.factorial(n + 1)
     a3 = -mpm.fdiv(a1, a2)
     z = mpm.fsub(x, jump_loc)
     if 0 <= z < const.TWO_PI:
@@ -159,8 +174,10 @@ def __vn_func_val_at_x(x, n, jump_loc):
     a4 = mpm.bernpoly(n + 1, zz)
     s = mpm.fmul(a3, a4)
     return s
+
+
 def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
-    if k!=0:
+    if k != 0:
         omega = mpm.expj(-mpm.fmul(jump_loc, k))
         c = mpm.fdiv(omega, const.TWO_PI)
         r = 0
@@ -173,18 +190,22 @@ def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
         return mpm.fmul(c, r)
     else:
         return 0
+
+
 def __mk(ro, k, ck):
     a1 = mpm.power(mpm.fmul(1j, k), ro + 1)
     a2 = mpm.fmul(a1, ck)
     return mpm.fmul(const.TWO_PI, a2)
+
+
 def __create_polynomial_coefficients(reconstruction_order, func_coeff_col_vec, half_order_flag=True):
     m = func_coeff_col_vec.rows // 2
     if half_order_flag:
         half_order = reconstruction_order // 2
         polynom_coefficients = mpm.matrix(half_order + 2, 1)
-        for j in range(half_order+2):
+        for j in range(half_order + 2):
             k = m - half_order - 1
-            mk_val = __mk(ro=half_order, k=k+j, ck=func_coeff_col_vec[m + k + j ,0])
+            mk_val = __mk(ro=half_order, k=k + j, ck=func_coeff_col_vec[m + k + j, 0])
             b1 = mpm.power(-1, j)
             b2 = mpm.binomial(half_order + 1, j)
             b3 = mpm.fmul(b1, b2)
@@ -194,10 +215,10 @@ def __create_polynomial_coefficients(reconstruction_order, func_coeff_col_vec, h
         n = m // (reconstruction_order + 2)
         polynom_coefficients = mpm.matrix(reconstruction_order + 2, 1)
         for j in range(reconstruction_order + 2):
-            k = (j+1) * n
+            k = (j + 1) * n
             mk_val = __mk(ro=reconstruction_order, k=k, ck=func_coeff_col_vec[m + k, 0])
             b1 = mpm.power(-1, j)
             b2 = mpm.binomial(reconstruction_order + 1, j)
             b3 = mpm.fmul(b1, b2)
             polynom_coefficients[j, 0] = mpm.fmul(b3, mk_val)
-        return  polynom_coefficients
+        return polynom_coefficients
