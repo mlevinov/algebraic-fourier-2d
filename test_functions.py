@@ -97,10 +97,10 @@ class TestFunctions:
             print('assuming X and Y are numpy ndarray type')
             YY = mpm.matrix(Y)
             XX = mpm.matrix(X)
-            for ix in range(nx):
+            for ix in tqdm(range(nx)):
                 func_val[:, ix] = self.get_func_slice_at_x(XX[ix, 0], YY)
             return func_val
-        for ix in range(nx):
+        for ix in tqdm(range(nx)):
             func_val[:, ix] = self.get_func_slice_at_x(X[ix, 0], Y)
         return func_val
 
