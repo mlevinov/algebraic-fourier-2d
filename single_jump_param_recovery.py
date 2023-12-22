@@ -74,15 +74,17 @@ def approximate_jump_location(reconstruction_order, func_coeff_array, half_order
             return 1
         z_n = __closest_root_to_unit_disk(poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False))
         closest_root_to_half_order_root = z_n
-        min_dist_z_N_and_half_order_root = mpm.inf
+        min_dist_z_n_and_half_order_root = mpm.inf
         for k in range(n):
             z_k = mpm.root(z_n, n, k=k)
             current_distance_from_half_order_root_and_z_k = mpm.norm(mpm.fsub(half_order_root, z_k))
-            if current_distance_from_half_order_root_and_z_k < min_dist_z_N_and_half_order_root:
-                min_dist_z_N_and_half_order_root = current_distance_from_half_order_root_and_z_k
+            if current_distance_from_half_order_root_and_z_k < min_dist_z_n_and_half_order_root:
+                min_dist_z_n_and_half_order_root = current_distance_from_half_order_root_and_z_k
                 closest_root_to_half_order_root = z_k
         full_order_approximated_jump_location = -mpm.arg(closest_root_to_half_order_root)
         return full_order_approximated_jump_location
+
+
 def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approximated_jump_location, known_jump_loc=False):
     if known_jump_loc:
         omega = -1
@@ -95,7 +97,7 @@ def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approxim
     approximated_jump_magnitudes = mpm.matrix(reconstruction_order + 1, 1)
     # creating b
     b = mpm.matrix(reconstruction_order + 1, 1)
-    for i in range( reconstruction_order + 1):
+    for i in range(reconstruction_order + 1):
         index = (i + 1) * n
         mk_val = __mk(ro=reconstruction_order, k=index, ck=func_coeff_array[m + index, 0])
         try:

@@ -30,8 +30,8 @@ def mpmath_num_to_numpy(mpmath_num):
         s = float(mpm.nstr(mpmath_num, mpm.mp.dps))
         return s
     elif isinstance(mpmath_num, mpm.mpc):
-        re = mpm.nstr(mpm.re(mpmath_num), n=mpm.mp)
-        im = mpm.nstr(mpm.im(mpmath_num), n=mpm.mp)
+        re = mpm.nstr(mpm.re(mpmath_num), n=mpm.mp.dps)
+        im = mpm.nstr(mpm.im(mpmath_num), n=mpm.mp.dps)
         s = complex(float(re), float(im))
         return s
     elif isinstance(mpmath_num, float) or isinstance(mpmath_num, complex) or isinstance(mpmath_num, int):
@@ -54,7 +54,7 @@ def elementwise_norm_matrix(mp_arr1, mp_arr2):
     try:
         try:
             norm_mat = mp_arr1 - mp_arr2
-        except ValueError as ve:
+        except ValueError:
             print('incompatible dimensions for subtraction, trying transposing')
             norm_mat = mp_arr1 - mp_arr2.T
             print('transposing worked, continuing\n')
@@ -65,7 +65,7 @@ def elementwise_norm_matrix(mp_arr1, mp_arr2):
     cols = norm_mat.cols
     for r in range(rows):
         for c in range(cols):
-            norm_mat[r, c] = mpm.norm(norm_mat[r, c], p=2)
+            norm_mat[r, c] = mpm.fabs(norm_mat[r, c])
     return norm_mat
 
 if __name__ == '__main__':
