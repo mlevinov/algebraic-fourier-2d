@@ -37,7 +37,7 @@ def plot_f_and_jump_curve(X, Y, func_vals, test_func_type, show_plot=False, save
     ax.view_init(16, 245)
     if save_plot:
         path = "plots/exact f and xi/"
-        name = "num_of_x-{}_num_of_y-{}_func_type-{}.pdf".format(len(X), len(Y), test_func_type)
+        name = "f_and_xi-num_xs-{}_num_ys-{}_func_type-{}.pdf".format(len(X), len(Y), test_func_type)
         try:
             os.mkdir("./plots")
         except OSError:
@@ -54,7 +54,7 @@ def plot_f_and_jump_curve(X, Y, func_vals, test_func_type, show_plot=False, save
         plt.show()
 
 
-def plot_approximation_of_f_and_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, test_func_type, show_plot=False, save_plot=True):
+def plot_approximation_of_f_and_jump_curve(X, Y, reconstruction_order, moy_val, f_tilde_vals, jump_curve_tilde, test_func_type, show_plot=False, save_plot=True):
     XV, YV = np.meshgrid(X, Y)
     plt.figure(figsize=[14, 14])
     ax = plt.axes(projection='3d')
@@ -65,11 +65,16 @@ def plot_approximation_of_f_and_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde,
     Zs = np.zeros(shape=(len(X)))
     for k in range(len(X)):
         Zs[k] = minF
+    s2 = 'reconstruction order is {}'.format(reconstruction_order)
     if test_func_type == 1 or test_func_type == 2:
-        plt.title(r'$\tilde{f}$' + ' and ' + r'$\tilde{\xi}\approx$%s' % 'x')
+        s1 = r'$\tilde{f}$' + ' & ' + r'$\tilde{\xi}(x)\approx$%s' % 'x'
+        # plt.title(r'$\tilde{f}$' + ' and ' + r'$\tilde{\xi}\approx$%s' % 'x')
+        plt.title(s1 + '\n' + s2)
         ax.scatter(X, np_jump_curve_val, Zs, c='r', marker='^')
     else:  # type 3
-        plt.title(r'$\tilde{f}$' + ' and ' + r'$\tilde{\xi}\approx$%s' % 'x/2')
+        s1 = r'$\tilde{f}$' + ' & ' + r'$\tilde{\xi}(x)\approx$%s' % 'x/2'
+        # plt.title(r'$\tilde{f}$' + ' and ' + r'$\tilde{\xi}\approx$%s' % 'x/2')
+        plt.title(s1 + '\n' + s2)
         ax.scatter(X, np_jump_curve_val, Zs, c='r', marker='^')
     # fake lines for adding legend to a surface plot
     fake2Dline1 = mpl.lines.Line2D([0], [0], linestyle="none", c='b', marker='o')
@@ -81,7 +86,8 @@ def plot_approximation_of_f_and_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde,
     ax.view_init(16, 245)
     if save_plot:
         path = "plots/f_tilde and xi_tilde/"
-        name = "num_of_x-{}_num_of_y-{}_func_type-{}.pdf".format(len(X), len(Y), test_func_type)
+        name = "f_and_xi_tilde-num_xs-{}_num_ys-{}_func_type-{}_ro-{}_moy-{}.pdf".format(len(X), len(Y), test_func_type,
+                                                                                                reconstruction_order, moy_val)
         try:
             os.mkdir("./plots")
         except OSError:
@@ -230,7 +236,6 @@ def plot_err_in_jump_mag_vs_moy(x, moy_vals, err_jump_mag, func_type, show_plot=
     else:
         plt.show()
 
-
 # |-----------------------------------------------------------------------|
 # |-------------------------------- Tests --------------------------------|
 # |-----------------------------------------------------------------------|
@@ -245,9 +250,9 @@ if __name__ == "__main__":
         ny = 8
         Y = np.linspace(-const.NP_PI, const.NP_PI - const.EPS, ny)
         x = 1.1
-        reconstruction_order = 5
-        strt_moy_val = 20
-        num_of_moy_vals = 9
+        reconstruction_order = 7
+        strt_moy_val = 22
+        num_of_moy_vals = 14
         inc_moy = 10
         end_moy_val = strt_moy_val + (num_of_moy_vals * inc_moy)
         psi_jump_loc = -const.MP_PI
@@ -314,10 +319,9 @@ if __name__ == "__main__":
         # |------------------- Error in A_l vs Moy ---------------------|
         plot_err_in_jump_mag_vs_moy(x=x, moy_vals=mpm.matrix(moy_vals), err_jump_mag=err_jump_mag_tilde, func_type=tf.get_func_type(),
                                     show_plot=show_plot, save_plot=save_plot)
-
-
     def exact_f_and_xi(show_plot=False, save_plot=True):
-        dps = 35
+        print('plotting exact f and xi')
+        dps = 100
         mpm.mp.dps = dps
         func_type = const.FUNC_TYPE_F2
         nx = 128
@@ -327,22 +331,23 @@ if __name__ == "__main__":
         tf = TestFunctions(dps=dps, func_type=func_type)
         exact_func_val = tf.get_func_val(X, Y)
         plot_f_and_jump_curve(X, Y, exact_func_val, test_func_type=tf.get_func_type(), show_plot=show_plot, save_plot=save_plot)
-
-
     def f_tilde_and_xi_tilde(show_plot=False, save_plot=True):
+        print('plotting f_tilde and xi_tilde')
         dps = 100
         mpm.mp.dps = dps
         func_type = const.FUNC_TYPE_F2
-        nx = 16
-        ny = 16
+        nx = 128
+        ny = 128
         X = np.linspace(-const.NP_PI + const.EPS, const.NP_PI - const.EPS, nx)
         Y = np.linspace(-const.NP_PI + const.EPS, const.NP_PI - const.EPS, ny)
         tf = TestFunctions(dps=dps, func_type=func_type)
         psi_jump_loc = -const.MP_PI
-        moy = 15
+        moy = 30
         mox = pow(moy, 2)
-        ro = 4
+        ro = 9
         psi_vals = mpm.matrix(2 * moy + 1, nx)
+        # calculating coefficients
+        print('calculating coefficients\n')
         for oy in tqdm(range(-moy, moy + 1)):
             # creating coefficients for psi at oy
             func_coeff = mpm.matrix(2 * mox + 1, 1)
@@ -357,6 +362,8 @@ if __name__ == "__main__":
                                                           jump_loc=psi_jump_loc, jump_mag_array=approx_psi_jump_mag)
         f_tilde = mpm.matrix(ny, nx)
         jump_curve_tilde = mpm.matrix(nx, 1)
+        # calculatinf f_tilde and xi_tilde
+        print('calculating f_tilde and xi_tilde\n')
         for ix in tqdm(range(nx)):
             psi_oy_at_x = psi_vals[:, ix]
             jump_curve_tilde[ix, 0] = sj.approximate_jump_location(reconstruction_order=ro, func_coeff_array=psi_oy_at_x,
@@ -368,14 +375,10 @@ if __name__ == "__main__":
                 f_tilde[iy, ix] = sj.func_val_at_x(x=Y[iy], reconstruction_order=ro, func_coeff_array=psi_oy_at_x,
                                                    jump_loc=jump_curve_tilde[ix, 0], jump_mag_array=approx_f_jump_mag_at_x)
 
-        plot_approximation_of_f_and_jump_curve(X, Y, f_tilde, jump_curve_tilde, test_func_type=tf.get_func_type(),
+        plot_approximation_of_f_and_jump_curve(X=X, Y=Y, reconstruction_order=ro, moy_val=moy,  f_tilde_vals=f_tilde,
+                                               jump_curve_tilde=jump_curve_tilde, test_func_type=tf.get_func_type(),
                                                show_plot=show_plot, save_plot=save_plot)
 
-
-    # f_tilde_xi_tilde_jump_mag_tilde()
-
-
     # exact_f_and_xi(True, True)
-
-
-    f_tilde_and_xi_tilde(True, True)
+    # f_tilde_and_xi_tilde(True, True)
+    f_tilde_xi_tilde_jump_mag_tilde(True, True)
