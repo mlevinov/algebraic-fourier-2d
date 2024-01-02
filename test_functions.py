@@ -17,6 +17,13 @@ class TestFunctions:
             self.smoothness_order = const.F2_F3_SMOOTHNESS_ORDER
 
     def get_jump_magnitudes_at_x(self, x):
+        """
+        Getting the exact jump magnitude of a slice of the test function :math:`F_{x}` at a point :math:`x`.
+        :param x: a value in :math:`[-\pi, \pi)`
+        :type x: float
+        :return: returns the jump magnitude of :math:`F_{x}`
+        :rtype: float
+        """
         if self.func_type == const.FUNC_TYPE_F1:
             jump_magnitudes = mpm.matrix(const.F1_SMOOTHNESS_ORDER + 1, 1)
             for l in range(const.F1_SMOOTHNESS_ORDER + 1):
@@ -26,12 +33,31 @@ class TestFunctions:
             return mpm.ones(const.F2_F3_SMOOTHNESS_ORDER + 1, 1)
 
     def get_func_type(self):
+        """
+        There are 3 test functions as mentioned in the readme file
+        :return:  returns the test function value type 1, 2 or 3
+        :rtype: int
+        """
         return self.func_type
 
     def get_smoothness_order(self):
+        """
+        Every test functions has its own smoothness orders
+        :return: returns the smoothness order of this test function
+        :rtype: int
+        """
         return self.smoothness_order
 
     def get_func_val_at_point(self, x, y):
+        """
+        Calculate the value of the test function at a point - :math:`F(x,y)`
+        :param x: :math:`x\in [-\pi, \pi)`
+        :type x: float
+        :param y: :math:`y\in [-\pi, \pi)`
+        :type y: float
+        :return: returns the value of :math:`F(x,y)`
+        :rtype: float
+        """
         if self.func_type == const.FUNC_TYPE_F1:
             return self.__get_func_type_1_val_at_point(x, y)
         elif self.func_type == const.FUNC_TYPE_F2:
@@ -64,26 +90,34 @@ class TestFunctions:
         return s
 
     def get_func_slice_at_x(self, x, Y):
+        """
+        Calculates the value of :math:`F_{x}(y)`
+        :param x: a point :math:`x\in [-\pi, \pi)`
+        :type x: float
+        :param Y: a point :math:`x\in [-\pi, \pi)`
+        :type Y: float
+        :return: returns the value of :math:`F_{x}(y)`
+        :rtype: float
+        """
         # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
         ny = len(Y)
         Y = mpm.matrix(Y)
         func_values_at_x = mpm.matrix(ny, 1)
-        # try:
-        #     if Y.cols != 1:
-        #         Y = Y.T
-        #     for iy in range(ny):
-        #         func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy, 0])
-        #     return func_values_at_x
-        # except AttributeError:
-        #     print('assuming Y is a numpy array')
-        #     for iy in range(ny):
-        #         func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy])
-        #     return func_values_at_x
         for iy in range(ny):
             func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy])
         return func_values_at_x
 
     def get_func_val(self, X, Y):
+        """
+        Calculating the value of :math:`F(x,y)` for each :math:`(x,y)\in [-\pi, \pi)^2`
+        X an Y can be either 1D array of floats or a column matrix of mpmath.matrix type
+        :param X: :math:`X\subset [-\pi, \pi)`
+        :type X: array type
+        :param Y: :math:`X\subset [-\pi, \pi)`
+        :type Y: array type
+        :return: returns a matrix of type mpmath.matrix of order :math:`len(Y)\times len(X)` with values of :math:`F(x,y)`
+        :rtype: array type
+        """
         # assuming Y and X are column mpmath vectors (of order n * 1 and m * 1 respectively)
         ny = len(Y)
         nx = len(X)
@@ -105,12 +139,26 @@ class TestFunctions:
         return func_val
 
     def get_slice_at_x_jump_loc(self, x):
+        """
+        Getting the exact jump location of :math:`F_{x}`
+        :param x: :math:`x\in [-\pi, \pi)`
+        :type x: float
+        :return: the location of the discontinuity of :math:`F_{x}` in :math:`[-\pi, \pi)`
+        :rtype: float
+        """
         if self.func_type != const.FUNC_TYPE_F3:
             return x
         else:
             return mpm.fdiv(x, 2)
 
     def get_func_discontinuity_curve(self, nx=64):
+        """
+        Getting the entire discontinuity curve of :math:`F`
+        :param nx: number of points for the curve
+        :type nx: int
+        :return: returns 1D ndarray with size of nx of the discontinuity curve of :math:`F`
+        :rtype: ndarray
+        """
         X = np.linspace(-np.pi + const.EPS, np.pi, nx)
         if self.func_type == const.FUNC_TYPE_F1 or self.func_type == const.FUNC_TYPE_F2:
             return X
