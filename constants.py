@@ -1,6 +1,9 @@
 import mpmath as mpm
 import numpy as np
 
+# Default values
+DEFAULT_DPS = 25
+DEFAULT_JUMP_LOC = 0
 # used for [-pi, pi) segment
 EPS = pow(10, -1)
 # indicators for our test functions

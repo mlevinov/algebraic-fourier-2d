@@ -336,15 +336,15 @@ if __name__ == "__main__":
         dps = 100
         mpm.mp.dps = dps
         func_type = const.FUNC_TYPE_F2
-        nx = 128
-        ny = 128
+        nx =  32
+        ny = 32
         X = np.linspace(-const.NP_PI + const.EPS, const.NP_PI - const.EPS, nx)
         Y = np.linspace(-const.NP_PI + const.EPS, const.NP_PI - const.EPS, ny)
         tf = TestFunctions(dps=dps, func_type=func_type)
         psi_jump_loc = -const.MP_PI
-        moy = 30
+        moy = 18
         mox = pow(moy, 2)
-        ro = 9
+        ro = 1
         psi_vals = mpm.matrix(2 * moy + 1, nx)
         # calculating coefficients
         print('calculating coefficients\n')
@@ -379,6 +379,6 @@ if __name__ == "__main__":
                                                jump_curve_tilde=jump_curve_tilde, test_func_type=tf.get_func_type(),
                                                show_plot=show_plot, save_plot=save_plot)
 
-    # exact_f_and_xi(True, True)
-    # f_tilde_and_xi_tilde(True, True)
-    f_tilde_xi_tilde_jump_mag_tilde(True, True)
+    # exact_f_and_xi(True, False)
+    f_tilde_and_xi_tilde(True, False)
+    f_tilde_xi_tilde_jump_mag_tilde(True, False)
