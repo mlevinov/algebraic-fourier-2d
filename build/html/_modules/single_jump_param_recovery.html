@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>single_jump_param_recovery &#8212; 2D reconstruction  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for single_jump_param_recovery</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">mpmath</span> <span class="k">as</span> <span class="nn">mpm</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">constants</span> <span class="k">as</span> <span class="nn">const</span>
+<span class="kn">from</span> <span class="nn">mpmath</span> <span class="kn">import</span> <span class="n">libmp</span>
+
+
+<div class="viewcode-block" id="set_mpmath_precision">
+<a class="viewcode-back" href="../single_jump_param_recovery.html#single_jump_param_recovery.set_mpmath_precision">[docs]</a>
+<span class="k">def</span> <span class="nf">set_mpmath_precision</span><span class="p">(</span><span class="n">dps</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">mpm</span><span class="o">.</span><span class="n">mp</span><span class="o">.</span><span class="n">dps</span> <span class="o">=</span> <span class="n">dps</span></div>
+
+
+
+<div class="viewcode-block" id="phi_func_val_at_x">
+<a class="viewcode-back" href="../single_jump_param_recovery.html#single_jump_param_recovery.phi_func_val_at_x">[docs]</a>
+<span class="k">def</span> <span class="nf">phi_func_val_at_x</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">jump_loc</span><span class="p">,</span> <span class="n">jump_mag_array</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">reconstruction_order</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">al</span> <span class="o">=</span> <span class="n">jump_mag_array</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">vl</span> <span class="o">=</span> <span class="n">__vn_func_val_at_x</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">jump_loc</span><span class="p">)</span>
+        <span class="n">s1</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">al</span><span class="p">,</span> <span class="n">vl</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fadd</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span></div>
+
+
+
+<div class="viewcode-block" id="psi_func_val_at_x">
+<a class="viewcode-back" href="../single_jump_param_recovery.html#single_jump_param_recovery.psi_func_val_at_x">[docs]</a>
+<span class="k">def</span> <span class="nf">psi_func_val_at_x</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="p">,</span> <span class="n">jump_loc</span><span class="p">,</span> <span class="n">jump_mag_array</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">func_coeff_array</span><span class="o">.</span><span class="n">rows</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">phi_k_coeff</span> <span class="o">=</span> <span class="n">__calc_coeff_phi</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">reconstruction_order</span><span class="o">=</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">jump_loc</span><span class="o">=</span><span class="n">jump_loc</span><span class="p">,</span>
+                                       <span class="n">jump_mag_array</span><span class="o">=</span><span class="n">jump_mag_array</span><span class="p">)</span>
+        <span class="n">psi_k_coeff</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fsub</span><span class="p">(</span><span class="n">func_coeff_array</span><span class="p">[</span><span class="n">m</span> <span class="o">+</span> <span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">phi_k_coeff</span><span class="p">)</span>
+        <span class="n">s1</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">expj</span><span class="p">(</span><span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">psi_k_coeff</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fadd</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span></div>
+
+
+
+<div class="viewcode-block" id="func_val_at_x">
+<a class="viewcode-back" href="../single_jump_param_recovery.html#single_jump_param_recovery.func_val_at_x">[docs]</a>
+<span class="k">def</span> <span class="nf">func_val_at_x</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="p">,</span> <span class="n">jump_loc</span><span class="p">,</span> <span class="n">jump_mag_array</span><span class="p">):</span>
+    <span class="n">phi_val</span> <span class="o">=</span> <span class="n">phi_func_val_at_x</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">reconstruction_order</span><span class="o">=</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">jump_loc</span><span class="o">=</span><span class="n">jump_loc</span><span class="p">,</span>
+                                <span class="n">jump_mag_array</span><span class="o">=</span><span class="n">jump_mag_array</span><span class="p">)</span>
+    <span class="n">psi_val</span> <span class="o">=</span> <span class="n">psi_func_val_at_x</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">reconstruction_order</span><span class="o">=</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="o">=</span><span class="n">func_coeff_array</span><span class="p">,</span>
+                                <span class="n">jump_loc</span><span class="o">=</span><span class="n">jump_loc</span><span class="p">,</span> <span class="n">jump_mag_array</span><span class="o">=</span><span class="n">jump_mag_array</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fadd</span><span class="p">(</span><span class="n">psi_val</span><span class="p">,</span> <span class="n">phi_val</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="poly_roots">
+<a class="viewcode-back" href="../single_jump_param_recovery.html#single_jump_param_recovery.poly_roots">[docs]</a>
+<span class="k">def</span> <span class="nf">poly_roots</span><span class="p">(</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="p">,</span> <span class="n">half_order_flag</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">coefficients</span> <span class="o">=</span> <span class="n">__create_polynomial_coefficients</span><span class="p">(</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="p">,</span> <span class="n">half_order_flag</span><span class="p">)</span>
+    <span class="n">tries</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">max_steps</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">extra_prec</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">polynomial_roots</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">convergenceFlag</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">while</span> <span class="n">tries</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">polynomial_roots</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">polyroots</span><span class="p">(</span><span class="n">coefficients</span><span class="p">,</span> <span class="n">maxsteps</span><span class="o">=</span><span class="n">max_steps</span><span class="p">,</span> <span class="n">extraprec</span><span class="o">=</span><span class="n">extra_prec</span><span class="p">)</span>
+            <span class="n">convergenceFlag</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="n">mpm</span><span class="o">.</span><span class="n">libmp</span><span class="o">.</span><span class="n">libhyper</span><span class="o">.</span><span class="n">NoConvergence</span><span class="p">:</span>
+            <span class="n">convergenceFlag</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">max_steps</span> <span class="o">+=</span> <span class="mi">25</span>
+            <span class="n">extra_prec</span> <span class="o">+=</span> <span class="mi">10</span>
+            <span class="n">tries</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">ZeroDivisionError:&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">coefficients for polynomial are:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coefficients</span><span class="p">))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">first coefficient must be NOT ZERO</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">convergenceFlag</span><span class="p">:</span>
+        <span class="c1"># raise NoRootConvergenceError(tries, max_steps, extra_prec)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">polynomial_roots</span></div>
+
+
+
+<div class="viewcode-block" id="approximate_jump_location">
+<a class="viewcode-back" href="../single_jump_param_recovery.html#single_jump_param_recovery.approximate_jump_location">[docs]</a>
+<span class="k">def</span> <span class="nf">approximate_jump_location</span><span class="p">(</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="p">,</span> <span class="n">half_order_flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">get_omega_flag</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">func_coeff_array</span><span class="o">.</span><span class="n">rows</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">half_order_flag</span><span class="p">:</span>
+        <span class="n">roots</span> <span class="o">=</span> <span class="n">poly_roots</span><span class="p">(</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="p">,</span> <span class="n">half_order_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">closest_root</span> <span class="o">=</span> <span class="n">__closest_root_to_unit_disk</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">get_omega_flag</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">closest_root</span>
+        <span class="n">approximated_jump_location</span> <span class="o">=</span> <span class="o">-</span><span class="n">mpm</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span><span class="n">closest_root</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">approximated_jump_location</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">half_order_root</span> <span class="o">=</span> <span class="n">approximate_jump_location</span><span class="p">(</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="p">,</span> <span class="n">half_order_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">get_omega_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">m</span> <span class="o">//</span> <span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;M = </span><span class="si">{}</span><span class="s1"> -&gt; floor(M/(d+2)) = 0&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="n">z_n</span> <span class="o">=</span> <span class="n">__closest_root_to_unit_disk</span><span class="p">(</span><span class="n">poly_roots</span><span class="p">(</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="p">,</span> <span class="n">half_order_flag</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">closest_root_to_half_order_root</span> <span class="o">=</span> <span class="n">z_n</span>
+        <span class="n">min_dist_z_n_and_half_order_root</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">inf</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">z_k</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">root</span><span class="p">(</span><span class="n">z_n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">current_distance_from_half_order_root_and_z_k</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mpm</span><span class="o">.</span><span class="n">fsub</span><span class="p">(</span><span class="n">half_order_root</span><span class="p">,</span> <span class="n">z_k</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">current_distance_from_half_order_root_and_z_k</span> <span class="o">&lt;</span> <span class="n">min_dist_z_n_and_half_order_root</span><span class="p">:</span>
+                <span class="n">min_dist_z_n_and_half_order_root</span> <span class="o">=</span> <span class="n">current_distance_from_half_order_root_and_z_k</span>
+                <span class="n">closest_root_to_half_order_root</span> <span class="o">=</span> <span class="n">z_k</span>
+        <span class="n">full_order_approximated_jump_location</span> <span class="o">=</span> <span class="o">-</span><span class="n">mpm</span><span class="o">.</span><span class="n">arg</span><span class="p">(</span><span class="n">closest_root_to_half_order_root</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">full_order_approximated_jump_location</span></div>
+
+
+
+<div class="viewcode-block" id="approximate_jump_magnitudes">
+<a class="viewcode-back" href="../single_jump_param_recovery.html#single_jump_param_recovery.approximate_jump_magnitudes">[docs]</a>
+<span class="k">def</span> <span class="nf">approximate_jump_magnitudes</span><span class="p">(</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_array</span><span class="p">,</span> <span class="n">approximated_jump_location</span><span class="p">,</span> <span class="n">known_jump_loc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">known_jump_loc</span><span class="p">:</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">expj</span><span class="p">(</span><span class="o">-</span><span class="n">approximated_jump_location</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">func_coeff_array</span><span class="o">.</span><span class="n">rows</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">m</span> <span class="o">//</span> <span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">VNd</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">approximated_jump_magnitudes</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># creating b</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span>
+        <span class="n">mk_val</span> <span class="o">=</span> <span class="n">__mk</span><span class="p">(</span><span class="n">ro</span><span class="o">=</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">ck</span><span class="o">=</span><span class="n">func_coeff_array</span><span class="p">[</span><span class="n">m</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">mk_val</span><span class="p">,</span> <span class="n">mpm</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="o">-</span><span class="n">index</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;devision by zero error&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;applying the next fix to continue b[i,0] = b[i-1, 0] if i&gt;=0, else b[0,0] = 0&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;notice that the results would lose accuracy&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># continue to create row i in VNd</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">VNd</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+
+    <span class="c1"># solving VNd * x = b</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">lu_solve</span><span class="p">(</span><span class="n">VNd</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="c1"># extracting the actual jump magnitudes:</span>
+    <span class="c1"># denote A_l as the jump magnitude of d^l/dx^l(Fx) at its singularity then</span>
+    <span class="c1"># denote a_l = sol[l]-&gt; sol = [a_0, a_1, ..., a_l]^T, then</span>
+    <span class="c1"># A_l = (-i)^(r0-l) * a_(ro-l)</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># sol = [alpha_0,..., alpha_d]</span>
+        <span class="c1"># s = alpha_d -&gt; alpha_0</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[</span><span class="n">reconstruction_order</span> <span class="o">-</span> <span class="n">l</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="n">reconstruction_order</span> <span class="o">-</span> <span class="n">l</span><span class="p">)</span>
+        <span class="n">approximated_jump_magnitudes</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fdiv</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">approximated_jump_magnitudes</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">__closest_root_to_unit_disk</span><span class="p">(</span><span class="n">roots</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">roots</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;root list is empty&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="n">closest_root_to_unit_disk</span> <span class="o">=</span> <span class="n">roots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">min_distance_of_root_to_unit_disk</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">roots</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">root</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">normalized_root</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fdiv</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">mpm</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+            <span class="n">current_distance_of_root_to_unit_disk</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">mpm</span><span class="o">.</span><span class="n">fsub</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">normalized_root</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">current_distance_of_root_to_unit_disk</span> <span class="o">&lt;</span> <span class="n">min_distance_of_root_to_unit_disk</span><span class="p">:</span>
+                <span class="n">min_distance_of_root_to_unit_disk</span> <span class="o">=</span> <span class="n">current_distance_of_root_to_unit_disk</span>
+                <span class="n">closest_root_to_unit_disk</span> <span class="o">=</span> <span class="n">root</span>
+    <span class="k">return</span> <span class="n">closest_root_to_unit_disk</span>
+
+
+<span class="k">def</span> <span class="nf">__vn_func_val_at_x</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">jump_loc</span><span class="p">):</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">const</span><span class="o">.</span><span class="n">TWO_PI</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="o">-</span><span class="n">mpm</span><span class="o">.</span><span class="n">fdiv</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fsub</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">jump_loc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">z</span> <span class="o">&lt;</span> <span class="n">const</span><span class="o">.</span><span class="n">TWO_PI</span><span class="p">:</span>
+        <span class="n">zz</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fdiv</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">const</span><span class="o">.</span><span class="n">TWO_PI</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="o">-</span><span class="n">const</span><span class="o">.</span><span class="n">TWO_PI</span> <span class="o">&lt;=</span> <span class="n">z</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">zz</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fdiv</span><span class="p">(</span><span class="n">mpm</span><span class="o">.</span><span class="n">fadd</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">const</span><span class="o">.</span><span class="n">TWO_PI</span><span class="p">),</span> <span class="n">const</span><span class="o">.</span><span class="n">TWO_PI</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">mpm</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">a4</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">bernpoly</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">zz</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<span class="k">def</span> <span class="nf">__calc_coeff_phi</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">jump_loc</span><span class="p">,</span> <span class="n">jump_mag_array</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">expj</span><span class="p">(</span><span class="o">-</span><span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">jump_loc</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fdiv</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">const</span><span class="o">.</span><span class="n">TWO_PI</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">al</span> <span class="o">=</span> <span class="n">jump_mag_array</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">r3</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fdiv</span><span class="p">(</span><span class="n">al</span><span class="p">,</span> <span class="n">r2</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fadd</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r3</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">__mk</span><span class="p">(</span><span class="n">ro</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">ck</span><span class="p">):</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">ro</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">ck</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">const</span><span class="o">.</span><span class="n">TWO_PI</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">__create_polynomial_coefficients</span><span class="p">(</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">func_coeff_col_vec</span><span class="p">,</span> <span class="n">half_order_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">func_coeff_col_vec</span><span class="o">.</span><span class="n">rows</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">half_order_flag</span><span class="p">:</span>
+        <span class="n">half_order</span> <span class="o">=</span> <span class="n">reconstruction_order</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">polynom_coefficients</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">half_order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">half_order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="n">half_order</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">mk_val</span> <span class="o">=</span> <span class="n">__mk</span><span class="p">(</span><span class="n">ro</span><span class="o">=</span><span class="n">half_order</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="n">ck</span><span class="o">=</span><span class="n">func_coeff_col_vec</span><span class="p">[</span><span class="n">m</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">b1</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+            <span class="n">b2</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">half_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+            <span class="n">b3</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">)</span>
+            <span class="n">polynom_coefficients</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">b3</span><span class="p">,</span> <span class="n">mk_val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">polynom_coefficients</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">m</span> <span class="o">//</span> <span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">polynom_coefficients</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span>
+            <span class="n">mk_val</span> <span class="o">=</span> <span class="n">__mk</span><span class="p">(</span><span class="n">ro</span><span class="o">=</span><span class="n">reconstruction_order</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">ck</span><span class="o">=</span><span class="n">func_coeff_col_vec</span><span class="p">[</span><span class="n">m</span> <span class="o">+</span> <span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">b1</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+            <span class="n">b2</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">reconstruction_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+            <span class="n">b3</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">)</span>
+            <span class="n">polynom_coefficients</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mpm</span><span class="o">.</span><span class="n">fmul</span><span class="p">(</span><span class="n">b3</span><span class="p">,</span> <span class="n">mk_val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">polynom_coefficients</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">2D reconstruction</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">V08</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Michael Levinov.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

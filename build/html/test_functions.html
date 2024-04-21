@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>test_functions module &#8212; 2D reconstruction  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=649a27d8" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css?v=658d757c" />
+    
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="tests module" href="tests.html" />
+    <link rel="prev" title="single_jump_param_recovery module" href="single_jump_param_recovery.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tests.html" title="tests module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="single_jump_param_recovery.html" title="single_jump_param_recovery module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">2D reconstruction  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">V08</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">test_functions module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-test_functions">
+<span id="test-functions-module"></span><h1>test_functions module<a class="headerlink" href="#module-test_functions" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="test_functions.TestFunctions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">test_functions.</span></span><span class="sig-name descname"><span class="pre">TestFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class TestFunctions represents three functions with two variables which are the test subjects of our routine.
+The class contains method which provides more data for each of the three test functions, such as its discontinuity curves and ect.
+dps value holds the precision in digits and its defaults is 25 (DEFAULT_DPS)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.compute_1D_fourier_at_x">
+<span class="sig-name descname"><span class="pre">compute_1D_fourier_at_x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.compute_1D_fourier_at_x"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.compute_1D_fourier_at_x" title="Link to this definition">¶</a></dt>
+<dd><p>Computing the truncated Fourier sum of <span class="math notranslate nohighlight">\(F_x\)</span> (denoted as <span class="math notranslate nohighlight">\(\mathcal{F}(F_x)\)</span>)
+from <span class="math notranslate nohighlight">\((2M_{\omega_x} + 1) \times (2M_{\omega_y} + 1)\)</span> Fourier coefficients of <span class="math notranslate nohighlight">\(F\)</span>
+(denoted as <span class="math notranslate nohighlight">\(F(\omega_x , \omega_y)\)</span>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – (float) <span class="math notranslate nohighlight">\(x \in [-\pi, \pi)\)</span></p></li>
+<li><p><strong>Y</strong> – (aaraylike) <span class="math notranslate nohighlight">\(Y \subset [-\pi, \pi)\)</span></p></li>
+<li><p><strong>mox</strong> – (int) computing <span class="math notranslate nohighlight">\(2M_{\omega_x} + 1\)</span> coefficients - <span class="math notranslate nohighlight">\(F(\omega_x , \omega_y)\)</span></p></li>
+<li><p><strong>moy</strong> – (int) computing <span class="math notranslate nohighlight">\(2M_{\omega_y} + 1\)</span> coefficients - <span class="math notranslate nohighlight">\(F(\omega_x , \omega_y)\)</span></p></li>
+<li><p><strong>func_type</strong> – (int) value from 1 to 3 representing the test function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mpmath.matrix type with the truncated sum <span class="math notranslate nohighlight">\(\mathcal{F}(F_x)\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>arraylike</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.get_func_discontinuity_curve">
+<span class="sig-name descname"><span class="pre">get_func_discontinuity_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.get_func_discontinuity_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.get_func_discontinuity_curve" title="Link to this definition">¶</a></dt>
+<dd><p>Getting the entire discontinuity curve of <span class="math notranslate nohighlight">\(F\)</span>
+:param nx: (int) number of points for the curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>returns 1D ndarray with size of nx of the discontinuity curve of <span class="math notranslate nohighlight">\(F\)</span></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.get_func_fourier_coefficient">
+<span class="sig-name descname"><span class="pre">get_func_fourier_coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.get_func_fourier_coefficient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.get_func_fourier_coefficient" title="Link to this definition">¶</a></dt>
+<dd><p>Calculating <span class="math notranslate nohighlight">\(F\)</span>’s Fourier coefficient at <span class="math notranslate nohighlight">\((\omega_x, \omega_y\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ox</strong> – (int) point for Fourier coefficient index <span class="math notranslate nohighlight">\(\omega_x\)</span></p></li>
+<li><p><strong>oy</strong> – (int) point for Fourier coefficient index <span class="math notranslate nohighlight">\(\omega_y\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>float of arbitrary precision (using mpmath library) representing the Fourier coefficient <span class="math notranslate nohighlight">\(F(\omega_x , \omega_y)\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.get_func_slice_at_x">
+<span class="sig-name descname"><span class="pre">get_func_slice_at_x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.get_func_slice_at_x"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.get_func_slice_at_x" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the values of <span class="math notranslate nohighlight">\(F_{x}(y)\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – (float) <span class="math notranslate nohighlight">\(x\in [-\pi, \pi)\)</span></p></li>
+<li><p><strong>Y</strong> – (arraylike) <span class="math notranslate nohighlight">\(Y\subset [-\pi, \pi)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>returns the values for <span class="math notranslate nohighlight">\(F_{x}(y)\)</span> as <span class="math notranslate nohighlight">\(Y\subset [-\pi, \pi)\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>arraylike</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.get_func_type">
+<span class="sig-name descname"><span class="pre">get_func_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.get_func_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.get_func_type" title="Link to this definition">¶</a></dt>
+<dd><p>Getting one of three values: [FUNC_TYPE_F1, FUNC_TYPE_F2, FUNC_TYPE_F3]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>returns FUNC_TYPE_F1=1 or FUNC_TYPE_F2=2 or FUNC_TYPE_F3=3</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.get_func_val">
+<span class="sig-name descname"><span class="pre">get_func_val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.get_func_val"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.get_func_val" title="Link to this definition">¶</a></dt>
+<dd><p>Calculating the value of <span class="math notranslate nohighlight">\(F(x,y)\)</span> for each <span class="math notranslate nohighlight">\((x,y)\in [-\pi, \pi)^2\)</span>.
+X an Y can be either 1D array of floats or a column matrix of mpmath.matrix type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – (arraylike) <span class="math notranslate nohighlight">\(X\subset [-\pi, \pi)\)</span></p></li>
+<li><p><strong>Y</strong> – (arraylike) <span class="math notranslate nohighlight">\(Y\subset [-\pi, \pi)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>returns a matrix of type mpmath.matrix of order <span class="math notranslate nohighlight">\(len(Y) \times len(X)\)</span> with values of <span class="math notranslate nohighlight">\(F(x,y)\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>arraylike</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.get_func_val_at_point">
+<span class="sig-name descname"><span class="pre">get_func_val_at_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.get_func_val_at_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.get_func_val_at_point" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the value of the test function at a point - <span class="math notranslate nohighlight">\(F(x,y)\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – (float) <span class="math notranslate nohighlight">\(x\in [-\pi, \pi)\)</span></p></li>
+<li><p><strong>y</strong> – (float) <span class="math notranslate nohighlight">\(y\in [-\pi, \pi)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>returns the value of <span class="math notranslate nohighlight">\(F(x,y)\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.get_jump_magnitudes_at_x">
+<span class="sig-name descname"><span class="pre">get_jump_magnitudes_at_x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.get_jump_magnitudes_at_x"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.get_jump_magnitudes_at_x" title="Link to this definition">¶</a></dt>
+<dd><p>Getting the exact jump magnitude of a slice of the test function <span class="math notranslate nohighlight">\(F_{x}\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> – (float) <span class="math notranslate nohighlight">\(x \in [-\pi, \pi)\)</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>returns the jump magnitude of <span class="math notranslate nohighlight">\(F_{x}\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.get_slice_at_x_jump_loc">
+<span class="sig-name descname"><span class="pre">get_slice_at_x_jump_loc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.get_slice_at_x_jump_loc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.get_slice_at_x_jump_loc" title="Link to this definition">¶</a></dt>
+<dd><p>Getting the exact jump location of <span class="math notranslate nohighlight">\(F_{x}\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> – (float) <span class="math notranslate nohighlight">\(x \in [-\pi, \pi)\)</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the location of the discontinuity of <span class="math notranslate nohighlight">\(F_{x}\)</span> in <span class="math notranslate nohighlight">\([-\pi, \pi)\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="test_functions.TestFunctions.get_smoothness_order">
+<span class="sig-name descname"><span class="pre">get_smoothness_order</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_functions.html#TestFunctions.get_smoothness_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_functions.TestFunctions.get_smoothness_order" title="Link to this definition">¶</a></dt>
+<dd><p>Getting the number of derivatives of <span class="math notranslate nohighlight">\(F_x\)</span> at each <span class="math notranslate nohighlight">\(x \in [-\pi, \pi)\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>returns a number representing the smoothness order of <span class="math notranslate nohighlight">\(F_x\)</span></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">test_functions module</a><ul>
+<li><a class="reference internal" href="#test_functions.TestFunctions"><code class="docutils literal notranslate"><span class="pre">TestFunctions</span></code></a><ul>
+<li><a class="reference internal" href="#test_functions.TestFunctions.compute_1D_fourier_at_x"><code class="docutils literal notranslate"><span class="pre">TestFunctions.compute_1D_fourier_at_x()</span></code></a></li>
+<li><a class="reference internal" href="#test_functions.TestFunctions.get_func_discontinuity_curve"><code class="docutils literal notranslate"><span class="pre">TestFunctions.get_func_discontinuity_curve()</span></code></a></li>
+<li><a class="reference internal" href="#test_functions.TestFunctions.get_func_fourier_coefficient"><code class="docutils literal notranslate"><span class="pre">TestFunctions.get_func_fourier_coefficient()</span></code></a></li>
+<li><a class="reference internal" href="#test_functions.TestFunctions.get_func_slice_at_x"><code class="docutils literal notranslate"><span class="pre">TestFunctions.get_func_slice_at_x()</span></code></a></li>
+<li><a class="reference internal" href="#test_functions.TestFunctions.get_func_type"><code class="docutils literal notranslate"><span class="pre">TestFunctions.get_func_type()</span></code></a></li>
+<li><a class="reference internal" href="#test_functions.TestFunctions.get_func_val"><code class="docutils literal notranslate"><span class="pre">TestFunctions.get_func_val()</span></code></a></li>
+<li><a class="reference internal" href="#test_functions.TestFunctions.get_func_val_at_point"><code class="docutils literal notranslate"><span class="pre">TestFunctions.get_func_val_at_point()</span></code></a></li>
+<li><a class="reference internal" href="#test_functions.TestFunctions.get_jump_magnitudes_at_x"><code class="docutils literal notranslate"><span class="pre">TestFunctions.get_jump_magnitudes_at_x()</span></code></a></li>
+<li><a class="reference internal" href="#test_functions.TestFunctions.get_slice_at_x_jump_loc"><code class="docutils literal notranslate"><span class="pre">TestFunctions.get_slice_at_x_jump_loc()</span></code></a></li>
+<li><a class="reference internal" href="#test_functions.TestFunctions.get_smoothness_order"><code class="docutils literal notranslate"><span class="pre">TestFunctions.get_smoothness_order()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="single_jump_param_recovery.html"
+                          title="previous chapter">single_jump_param_recovery module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="tests.html"
+                          title="next chapter">tests module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/test_functions.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tests.html" title="tests module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="single_jump_param_recovery.html" title="single_jump_param_recovery module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">2D reconstruction  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >V08</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">test_functions module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Michael Levinov.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    </div>
+  </body>
+</html>
