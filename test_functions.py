@@ -6,8 +6,10 @@ from tqdm import tqdm
 import constants as const
 import mpmath_tools as mpt
 
-
 class TestFunctions:
+    """ Class TestFunctions represents three functions with two variables which are the test subjects of our routine.
+        The class contains method which provides more data for each of the three test functions, such as its discontinuity curves and ect.
+        dps value holds the precision in digits and its defaults is 25 (DEFAULT_DPS)"""
     def __init__(self, dps=const.DEFAULT_DPS, func_type=const.FUNC_TYPE_F1):
         self.dps = dps
         self.func_type = func_type
@@ -18,12 +20,16 @@ class TestFunctions:
 
     def get_jump_magnitudes_at_x(self, x):
         """
-        Getting the exact jump magnitude of a slice of the test function :math:`F_{x}` at a point :math:`x`.
-        :param x: a value in :math:`[-\pi, \pi)`
-        :type x: float
-        :return: returns the jump magnitude of :math:`F_{x}`
-        :rtype: float
+        Getting the exact jump magnitude of a slice of the test function :math:`F_{x}`.
+
+        Args:
+            x: (float) :math:`x \\in [-\\pi, \\pi)`
+
+        Returns:
+            float: returns the jump magnitude of :math:`F_{x}`
+
         """
+
         if self.func_type == const.FUNC_TYPE_F1:
             jump_magnitudes = mpm.matrix(const.F1_SMOOTHNESS_ORDER + 1, 1)
             for l in range(const.F1_SMOOTHNESS_ORDER + 1):
@@ -34,30 +40,36 @@ class TestFunctions:
 
     def get_func_type(self):
         """
-        There are 3 test functions as mentioned in the readme file
-        :return:  returns the test function value type 1, 2 or 3
-        :rtype: int
+        Getting one of three values: [FUNC_TYPE_F1, FUNC_TYPE_F2, FUNC_TYPE_F3]
+
+        Returns:
+            int: returns FUNC_TYPE_F1=1 or FUNC_TYPE_F2=2 or FUNC_TYPE_F3=3
+
         """
         return self.func_type
 
     def get_smoothness_order(self):
         """
-        Every test functions has its own smoothness orders
-        :return: returns the smoothness order of this test function
-        :rtype: int
+        Getting the number of derivatives of :math:`F_x` at each :math:`x \\in [-\\pi, \\pi)`
+
+        Returns:
+            int: returns a number representing the smoothness order of :math:`F_x`
+
         """
         return self.smoothness_order
 
     def get_func_val_at_point(self, x, y):
         """
         Calculate the value of the test function at a point - :math:`F(x,y)`
-        :param x: :math:`x\in [-\pi, \pi)`
-        :type x: float
-        :param y: :math:`y\in [-\pi, \pi)`
-        :type y: float
-        :return: returns the value of :math:`F(x,y)`
-        :rtype: float
+
+        Args:
+            x: (float) :math:`x\\in [-\\pi, \\pi)`
+            y: (float) :math:`y\\in [-\\pi, \\pi)`
+
+        Returns:
+            float: returns the value of :math:`F(x,y)`
         """
+
         if self.func_type == const.FUNC_TYPE_F1:
             return self.__get_func_type_1_val_at_point(x, y)
         elif self.func_type == const.FUNC_TYPE_F2:
@@ -91,14 +103,16 @@ class TestFunctions:
 
     def get_func_slice_at_x(self, x, Y):
         """
-        Calculates the value of :math:`F_{x}(y)`
-        :param x: a point :math:`x\in [-\pi, \pi)`
-        :type x: float
-        :param Y: a point :math:`x\in [-\pi, \pi)`
-        :type Y: float
-        :return: returns the value of :math:`F_{x}(y)`
-        :rtype: float
+        Calculates the values of :math:`F_{x}(y)`
+
+        Args:
+            x: (float) :math:`x\\in [-\\pi, \\pi)`
+            Y: (arraylike) :math:`Y\\subset [-\\pi, \\pi)`
+
+        Returns:
+            arraylike: returns the values for :math:`F_{x}(y)` as :math:`Y\\subset [-\\pi, \\pi)`
         """
+
         # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
         ny = len(Y)
         Y = mpm.matrix(Y)
@@ -109,15 +123,17 @@ class TestFunctions:
 
     def get_func_val(self, X, Y):
         """
-        Calculating the value of :math:`F(x,y)` for each :math:`(x,y)\in [-\pi, \pi)^2`
+        Calculating the value of :math:`F(x,y)` for each :math:`(x,y)\\in [-\\pi, \\pi)^2`.
         X an Y can be either 1D array of floats or a column matrix of mpmath.matrix type
-        :param X: :math:`X\subset [-\pi, \pi)`
-        :type X: array type
-        :param Y: :math:`X\subset [-\pi, \pi)`
-        :type Y: array type
-        :return: returns a matrix of type mpmath.matrix of order :math:`len(Y)\times len(X)` with values of :math:`F(x,y)`
-        :rtype: array type
+
+        Args:
+            X: (arraylike) :math:`X\\subset [-\\pi, \\pi)`
+            Y: (arraylike) :math:`Y\\subset [-\\pi, \\pi)`
+
+        Returns:
+            arraylike: returns a matrix of type mpmath.matrix of order :math:`len(Y) \\times len(X)` with values of :math:`F(x,y)`
         """
+
         # assuming Y and X are column mpmath vectors (of order n * 1 and m * 1 respectively)
         ny = len(Y)
         nx = len(X)
@@ -141,11 +157,15 @@ class TestFunctions:
     def get_slice_at_x_jump_loc(self, x):
         """
         Getting the exact jump location of :math:`F_{x}`
-        :param x: :math:`x\in [-\pi, \pi)`
-        :type x: float
-        :return: the location of the discontinuity of :math:`F_{x}` in :math:`[-\pi, \pi)`
-        :rtype: float
+
+        Args:
+            x: (float) :math:`x \\in [-\\pi, \\pi)`
+
+        Returns:
+            float: the location of the discontinuity of :math:`F_{x}` in :math:`[-\\pi, \\pi)`
+
         """
+
         if self.func_type != const.FUNC_TYPE_F3:
             return x
         else:
@@ -154,11 +174,14 @@ class TestFunctions:
     def get_func_discontinuity_curve(self, nx=64):
         """
         Getting the entire discontinuity curve of :math:`F`
-        :param nx: number of points for the curve
-        :type nx: int
-        :return: returns 1D ndarray with size of nx of the discontinuity curve of :math:`F`
-        :rtype: ndarray
+        Args:
+            nx: (int) number of points for the curve
+
+        Returns:
+            ndarray: returns 1D ndarray with size of nx of the discontinuity curve of :math:`F`
+
         """
+
         X = np.linspace(-np.pi + const.EPS, np.pi, nx)
         if self.func_type == const.FUNC_TYPE_F1 or self.func_type == const.FUNC_TYPE_F2:
             return X
@@ -166,6 +189,17 @@ class TestFunctions:
             return X / 2
 
     def get_func_fourier_coefficient(self, ox, oy):
+        """
+        Calculating :math:`F`'s Fourier coefficient at :math:`(\\omega_x, \\omega_y`
+
+        Args:
+            ox: (int) point for Fourier coefficient index :math:`\\omega_x`
+            oy: (int) point for Fourier coefficient index :math:`\\omega_y`
+
+        Returns:
+            float: float of arbitrary precision (using mpmath library) representing the Fourier coefficient :math:`F(\\omega_x , \\omega_y)`
+
+        """
         if self.func_type == const.FUNC_TYPE_F1:
             return self.__get_fourier_func_type_1_coefficient(ox, oy)
         elif self.func_type == const.FUNC_TYPE_F2:
@@ -250,6 +284,22 @@ class TestFunctions:
                 return s
 
     def compute_1D_fourier_at_x(self, x, Y, mox, moy, func_type):
+        """
+        Computing the truncated Fourier sum of :math:`F_x` (denoted as :math:`\\mathcal{F}(F_x)`)
+        from :math:`(2M_{\\omega_x} + 1) \\times (2M_{\\omega_y} + 1)` Fourier coefficients of :math:`F`
+        (denoted as :math:`F(\\omega_x , \\omega_y)`)
+
+        Args:
+            x: (float) :math:`x \\in [-\\pi, \\pi)`
+            Y:  (aaraylike) :math:`Y \\subset [-\\pi, \\pi)`
+            mox: (int) computing :math:`2M_{\\omega_x} + 1` coefficients - :math:`F(\\omega_x , \\omega_y)`
+            moy: (int) computing :math:`2M_{\\omega_y} + 1` coefficients - :math:`F(\\omega_x , \\omega_y)`
+            func_type: (int) value from 1 to 3 representing the test function
+
+        Returns:
+            arraylike: mpmath.matrix type with the truncated sum :math:`\\mathcal{F}(F_x)`
+
+        """
         z = np.zeros(shape=Y.shape, dtype=complex)
         x_arr = np.full(Y.shape, x)
         for ox in range(-mox, mox + 1):
