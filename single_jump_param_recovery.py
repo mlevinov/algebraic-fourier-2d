@@ -1,6 +1,5 @@
 import sys
 import mpmath as mpm
-import numpy as np
 import constants as const
 from mpmath import libmp
 

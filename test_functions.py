@@ -84,7 +84,7 @@ class TestFunctions:
             func_val[:, ix] = self.get_func_slice_at_x(X[ix, 0], Y)
         return func_val
     def get_func_discontinuity_curve(self, nx=64):
-        X = np.linspace(-np.pi + const.eps, np.pi, nx)
+        X = np.linspace(-np.pi + const.EPS, np.pi, nx)
         if self.func_type == const.FUNC_TYPE_F1 or self.func_type == const.FUNC_TYPE_F2:
             return X
         else:
