@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mpmath_tools module &#8212; 2D reconstruction  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=649a27d8" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css?v=658d757c" />
+    
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="my tests module" href="my%20tests.html" />
+    <link rel="prev" title="general_todo_list module" href="general_todo_list.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="my%20tests.html" title="my tests module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="general_todo_list.html" title="general_todo_list module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">2D reconstruction  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">V08</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mpmath_tools module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mpmath_tools">
+<span id="mpmath-tools-module"></span><h1>mpmath_tools module<a class="headerlink" href="#module-mpmath_tools" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="mpmath_tools.elementwise_norm_matrix">
+<span class="sig-prename descclassname"><span class="pre">mpmath_tools.</span></span><span class="sig-name descname"><span class="pre">elementwise_norm_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mp_arr1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp_arr2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpmath_tools.html#elementwise_norm_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpmath_tools.elementwise_norm_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates <span class="math notranslate nohighlight">\(\lvert \text{mp_arr1[i,j]-mp_arr2[i,j]} \rvert\)</span> for each <span class="math notranslate nohighlight">\(1\leq i\leq m\)</span>
+and <span class="math notranslate nohighlight">\(1\leq j\leq n\)</span> where mp_arr1, mp_arr2 are of order <span class="math notranslate nohighlight">\(m\times n\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mp_arr1</strong> – (mpmath.matrix)</p></li>
+<li><p><strong>mp_arr2</strong> – (mpmath.matrix)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a matrix where each element is the absolut value of the difference between mp_arr1[i,j]
+and mp_arr2[i,j]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mpmath.matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mpmath_tools.find_max_val_index">
+<span class="sig-prename descclassname"><span class="pre">mpmath_tools.</span></span><span class="sig-name descname"><span class="pre">find_max_val_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpmath_arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpmath_tools.html#find_max_val_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpmath_tools.find_max_val_index" title="Link to this definition">¶</a></dt>
+<dd><p>finding the index of the maximum value in a given matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mpmath_arr</strong> – (mpmath.matrix) a matrix containing the maximal value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>row and column indexes for the maximal value in mpmath_arr</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mpmath_tools.find_min_val_index">
+<span class="sig-prename descclassname"><span class="pre">mpmath_tools.</span></span><span class="sig-name descname"><span class="pre">find_min_val_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpmath_arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpmath_tools.html#find_min_val_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpmath_tools.find_min_val_index" title="Link to this definition">¶</a></dt>
+<dd><p>finding the index of the minimal value in a given matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mpmath_arr</strong> – (mpmath.matrix) a matrix containing the minimal value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>row and column indexes for the minimal value in mpmath_arr</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mpmath_tools.mpm_matrix_to_mpmath_numpy_array">
+<span class="sig-prename descclassname"><span class="pre">mpmath_tools.</span></span><span class="sig-name descname"><span class="pre">mpm_matrix_to_mpmath_numpy_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpmath_arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpmath_tools.html#mpm_matrix_to_mpmath_numpy_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpmath_tools.mpm_matrix_to_mpmath_numpy_array" title="Link to this definition">¶</a></dt>
+<dd><p>Converting a mpmath matrix to a ndarry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mpmath_arr</strong> – (mpmath.matrix) a matrix of type mpmath.matrix to convert</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>returns a ndarray from the given mpmath.matrix</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mpmath_tools.mpmath_num_to_numpy">
+<span class="sig-prename descclassname"><span class="pre">mpmath_tools.</span></span><span class="sig-name descname"><span class="pre">mpmath_num_to_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpmath_num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpmath_tools.html#mpmath_num_to_numpy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpmath_tools.mpmath_num_to_numpy" title="Link to this definition">¶</a></dt>
+<dd><p>Converting a mpmath type value to a numpy type value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mpmath_num</strong> – (mpmath type) a value represented by the mpmath library</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>same value as mpmath_num but using numpy library</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mpmath_tools.numpy_array_to_mpmath_matrix">
+<span class="sig-prename descclassname"><span class="pre">mpmath_tools.</span></span><span class="sig-name descname"><span class="pre">numpy_array_to_mpmath_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">np_arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mpmath_tools.html#numpy_array_to_mpmath_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mpmath_tools.numpy_array_to_mpmath_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>converting from numpy ndarray to mpmath.mtrix type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>np_arr</strong> – (ndarray) numpy ndarry to convert to mpmath.matrix</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a matrix of type mpmath.matrix from np_arr</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>mpmath.matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">mpmath_tools module</a><ul>
+<li><a class="reference internal" href="#mpmath_tools.elementwise_norm_matrix"><code class="docutils literal notranslate"><span class="pre">elementwise_norm_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#mpmath_tools.find_max_val_index"><code class="docutils literal notranslate"><span class="pre">find_max_val_index()</span></code></a></li>
+<li><a class="reference internal" href="#mpmath_tools.find_min_val_index"><code class="docutils literal notranslate"><span class="pre">find_min_val_index()</span></code></a></li>
+<li><a class="reference internal" href="#mpmath_tools.mpm_matrix_to_mpmath_numpy_array"><code class="docutils literal notranslate"><span class="pre">mpm_matrix_to_mpmath_numpy_array()</span></code></a></li>
+<li><a class="reference internal" href="#mpmath_tools.mpmath_num_to_numpy"><code class="docutils literal notranslate"><span class="pre">mpmath_num_to_numpy()</span></code></a></li>
+<li><a class="reference internal" href="#mpmath_tools.numpy_array_to_mpmath_matrix"><code class="docutils literal notranslate"><span class="pre">numpy_array_to_mpmath_matrix()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="general_todo_list.html"
+                          title="previous chapter">general_todo_list module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="my%20tests.html"
+                          title="next chapter">my tests module</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mpmath_tools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="my%20tests.html" title="my tests module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="general_todo_list.html" title="general_todo_list module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">2D reconstruction  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >V08</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mpmath_tools module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Michael Levinov.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    </div>
+  </body>
+</html>
