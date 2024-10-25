@@ -61,7 +61,7 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
     ax.set_ylabel('y')
     ax.view_init(15, 280)
     plt.show()
-def plot_err_in_f_at_x_vs_n(x, Y, strt_oy, num_of_oys, inc_n, f_tilde_at_x, exact_f_at_x):
+def plot_err_in_approx_f_at_x_vs_n(x, Y, strt_oy, num_of_oys, inc_n, f_tilde_at_x, exact_f_at_x):
     end_oy_val = strt_oy + (num_of_oys * inc_n)
     ns = []
     for oy in range(strt_oy, end_oy_val + 1, inc_n):
@@ -88,7 +88,10 @@ def plot_err_in_f_at_x_vs_n(x, Y, strt_oy, num_of_oys, inc_n, f_tilde_at_x, exac
     ax.view_init(15, 280)
     plt.show()
     return 0
-
+def plot_err_in_approx_jump_location_at_x_vs_n():
+    return 0
+def plot_err_in_approx_jump_magnitudes_vs_n():
+    return 0
 if __name__ == "__main__":
     mpm.mp = 25
 
