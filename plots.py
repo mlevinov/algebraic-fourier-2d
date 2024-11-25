@@ -9,6 +9,14 @@ import mpmath_tools as mpt
 from test_functions import TestFunctions
 from tqdm import tqdm
 
+
+def create_oy_values(oy_strt_val=15, num_of_oy_vals=10, inc_oy=10):
+    end_oy_val = oy_strt_val + (num_of_oy_vals * inc_oy)
+    oy_arr = []
+    for oy in range(oy_strt_val, end_oy_val, inc_oy):
+        oy_arr.append(oy)
+    return oy_arr
+
 def plot_exact_f_and_exact_jump_curve(X, Y, func_vals, test_func_type):
     XV, YV = np.meshgrid(X, Y)
     plt.figure(figsize=[14, 14])
@@ -20,11 +28,11 @@ def plot_exact_f_and_exact_jump_curve(X, Y, func_vals, test_func_type):
     for k in range(len(X)):
         Zs[k] = minF
     if test_func_type == 1 or test_func_type == 2:
-        plt.suptitle('exact F with '+r'$\xi(x)=$%s' % 'x')
+        plt.suptitle('exact F with ' + r'$\xi(x)=$%s' % 'x')
         ax.scatter(X, X, Zs, c='r', marker='^')
     else:  # type = 3
         plt.suptitle('exact F with ' + r'$\xi(x)=$%s' % 'x/2')
-        ax.scatter(X, X/2, Zs, c='r', marker='^')
+        ax.scatter(X, X / 2, Zs, c='r', marker='^')
     # fake lines for adding legend to a surface plot
     fake2Dline1 = mpl.lines.Line2D([0], [0], linestyle="none", c='b', marker='o')
     fake2Dline2 = mpl.lines.Line2D([0], [0], linestyle="none", c='r', marker='o')
@@ -34,6 +42,7 @@ def plot_exact_f_and_exact_jump_curve(X, Y, func_vals, test_func_type):
     ax.set_ylabel('y')
     ax.view_init(15, 280)
     plt.show()
+
 
 def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, test_func_type):
     XV, YV = np.meshgrid(X, Y)
@@ -49,7 +58,7 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
     if test_func_type == 1 or test_func_type == 2:
         plt.suptitle(r'$\tilde{f}$' + ' and ' + r'$\tilde{\xi}ֿ\approx$%s' % 'x')
         ax.scatter(X, np_jump_curve_val, Zs, c='r', marker='^')
-    else: # type 3
+    else:  # type 3
         plt.suptitle(r'$\tilde{f}$' + ' and ' + r'$\tilde{\xi}ֿ\approx$%s' % 'x/2')
         ax.scatter(X, np_jump_curve_val, Zs, c='r', marker='^')
     # fake lines for adding legend to a surface plot
@@ -61,6 +70,8 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
     ax.set_ylabel('y')
     ax.view_init(15, 280)
     plt.show()
+
+
 def plot_err_in_approx_f_at_x_vs_n(x, Y, strt_oy, num_of_oys, inc_n, f_tilde_at_x, exact_f_at_x):
     end_oy_val = strt_oy + (num_of_oys * inc_n)
     ns = []
@@ -88,10 +99,16 @@ def plot_err_in_approx_f_at_x_vs_n(x, Y, strt_oy, num_of_oys, inc_n, f_tilde_at_
     ax.view_init(15, 280)
     plt.show()
     return 0
+
+
 def plot_err_in_approx_jump_location_at_x_vs_n():
     return 0
+
+
 def plot_err_in_approx_jump_magnitudes_vs_n():
     return 0
+
+
 if __name__ == "__main__":
     mpm.mp = 25
 
@@ -126,18 +143,18 @@ if __name__ == "__main__":
     m = pow(n, 2)
     ro = 0
     psi_vals = mpm.matrix(2 * n + 1, nx)
-    for oy in tqdm(range (-n, n + 1)):
+    for oy in tqdm(range(-n, n + 1)):
         # creating coefficients for psi at oy
         func_coeff = mpm.matrix(2 * m + 1, 1)
         for ox in range(-m, m + 1):
             func_coeff[m + ox, 0] = tf.get_func_fourier_coefficient(ox, oy)
         # approximating psi_oy over X
         for ix in range(nx):
-            x=X[ix]
+            x = X[ix]
             approx_psi_jump_mag = sj.approximate_jump_magnitudes(reconstruction_order=ro, func_coeff_array=func_coeff,
                                                                  approximated_jump_location=psi_jump_loc, known_jump_loc=True)
             psi_vals[n + oy, ix] = sj.func_val_at_x(x=x, reconstruction_order=ro, func_coeff_array=func_coeff,
-                                                      jump_loc=psi_jump_loc, jump_mag_array=approx_psi_jump_mag)
+                                                    jump_loc=psi_jump_loc, jump_mag_array=approx_psi_jump_mag)
     print()
     print('##### creating f tilde #####')
     print()
@@ -146,7 +163,7 @@ if __name__ == "__main__":
     for ix in tqdm(range(nx)):
         psi_oy_at_x = psi_vals[:, ix]
         jump_curve_tilde[ix, 0] = sj.approximate_jump_location(reconstruction_order=ro, func_coeff_array=psi_oy_at_x,
-                                                              half_order_flag=False)
+                                                               half_order_flag=False)
 
         approx_f_jump_mag_at_x = sj.approximate_jump_magnitudes(reconstruction_order=ro, func_coeff_array=psi_oy_at_x,
                                                                 approximated_jump_location=jump_curve_tilde[ix, 0],
