@@ -14,6 +14,7 @@ class TestFunctions:
             self.smoothness_order = const.F1_SMOOTHNESS_ORDER
         else:
             self.smoothness_order = const.F2_F3_SMOOTHNESS_ORDER
+
     def get_jump_magnitudes_at_x(self, x):
         if self.func_type == const.FUNC_TYPE_F1:
             jump_magnitudes = mpm.matrix(const.F1_SMOOTHNESS_ORDER + 1, 1)
@@ -22,10 +23,13 @@ class TestFunctions:
                 return jump_magnitudes
         else:
             return mpm.ones(const.F2_F3_SMOOTHNESS_ORDER + 1, 1)
+
     def get_func_type(self):
         return self.func_type
+
     def get_smoothness_order(self):
         return self.smoothness_order
+
     def get_func_val_at_point(self, x, y):
         if self.func_type == const.FUNC_TYPE_F1:
             return self.__get_func_type_1_val_at_point(x, y)
@@ -33,27 +37,31 @@ class TestFunctions:
             return self.__get_func_type_2_val_at_point(x, y)
         else:
             return self.__get_func_type_3_val_at_point(x, y)
+
     def __get_func_type_1_val_at_point(self, x, y):
         new_x = mpm.fsub(y, x)
         jump_magnitudes = self.get_jump_magnitudes_at_x(x)
         s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F1_SMOOTHNESS_ORDER,
                                    jump_loc=const.DEFAULT_JUMP_LOC, jump_mag_array=jump_magnitudes)
         return s
+
     def __get_func_type_2_val_at_point(self, x, y):
         new_x = mpm.fsub(y, x)
         jump_magnitudes = self.get_jump_magnitudes_at_x(x)
         s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F2_F3_SMOOTHNESS_ORDER,
                                    jump_loc=const.DEFAULT_JUMP_LOC, jump_mag_array=jump_magnitudes)
         return s
+
     def __get_func_type_3_val_at_point(self, x, y):
         new_x = mpm.fsub(y, mpm.fdiv(x, 2))
         jump_magnitudes = self.get_jump_magnitudes_at_x(x)
         # jump_magnitudes = mpm.matrix(1, const.F2_F3_SMOOTHNESS_ORDER + 1)
         # for l in range(const.F2_F3_SMOOTHNESS_ORDER + 1):
         #     jump_magnitudes[0, l] = 1
-        s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F2_F3_SMOOTHNESS_ORDER,jump_loc=const.DEFAULT_JUMP_LOC,
+        s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F2_F3_SMOOTHNESS_ORDER, jump_loc=const.DEFAULT_JUMP_LOC,
                                    jump_mag_array=jump_magnitudes)
         return s
+
     def get_func_slice_at_x(self, x, Y):
         # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
         ny = len(Y)
@@ -63,6 +71,7 @@ class TestFunctions:
         for iy in range(ny):
             func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy, 0])
         return func_values_at_x
+
     def get_func_val(self, X, Y):
         # assuming Y and X are column mpmath vectors (of order n * 1 and m * 1 respectively)
         ny = len(Y)
@@ -83,12 +92,14 @@ class TestFunctions:
         for ix in range(nx):
             func_val[:, ix] = self.get_func_slice_at_x(X[ix, 0], Y)
         return func_val
+
     def get_func_discontinuity_curve(self, nx=64):
         X = np.linspace(-np.pi + const.EPS, np.pi, nx)
         if self.func_type == const.FUNC_TYPE_F1 or self.func_type == const.FUNC_TYPE_F2:
             return X
         else:
-            return X/2
+            return X / 2
+
     def get_func_fourier_coefficient(self, ox, oy):
         if self.func_type == const.FUNC_TYPE_F1:
             return self.__get_fourier_func_type_1_coefficient(ox, oy)
@@ -98,6 +109,7 @@ class TestFunctions:
             return self.__get_fourier_func_type_3_coefficient(ox, oy)
         else:
             return 1
+
     def __get_fourier_func_type_1_coefficient(self, ox, oy):
         if oy == 0 or ox == -oy:
             return 0
@@ -124,6 +136,7 @@ class TestFunctions:
             b = mpm.fmul(b1, b4)
             s = mpm.fdiv(a, b)
             return s
+
     def __get_fourier_func_type_2_coefficient(self, ox, oy):
         if ox == -oy and oy != 0:
             a1 = mpm.fsub(mpm.power(oy, 2), 1)
@@ -141,6 +154,7 @@ class TestFunctions:
             return s
         else:
             return 0
+
     def __get_fourier_func_type_3_coefficient(self, ox, oy):
         if oy == 0:
             return 0
