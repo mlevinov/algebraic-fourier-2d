@@ -10,13 +10,6 @@ from test_functions import TestFunctions
 from tqdm import tqdm
 
 
-def create_oy_values(oy_strt_val=15, num_of_oy_vals=10, inc_oy=10):
-    end_oy_val = oy_strt_val + (num_of_oy_vals * inc_oy)
-    oy_arr = []
-    for oy in range(oy_strt_val, end_oy_val, inc_oy):
-        oy_arr.append(oy)
-    return oy_arr
-
 def plot_exact_f_and_exact_jump_curve(X, Y, func_vals, test_func_type):
     XV, YV = np.meshgrid(X, Y)
     plt.figure(figsize=[14, 14])
@@ -72,12 +65,7 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
     plt.show()
 
 
-def plot_err_in_approx_f_at_x_vs_n(x, Y, strt_oy, num_of_oys, inc_n, f_tilde_at_x, exact_f_at_x):
-    end_oy_val = strt_oy + (num_of_oys * inc_n)
-    ns = []
-    for oy in range(strt_oy, end_oy_val + 1, inc_n):
-        ns.append(oy)
-        n = 2 * oy + 1
+def plot_err_in_approx_f_at_x_vs_n(x, Y, oy_val_arr, f_tilde_at_x, exact_f_at_x):
 
     np_exact_f_at_x_val = np.real(mpt.mpm_matrix_to_mpmath_numpy_array(exact_f_at_x))
     np_f_tilde_at_x_val = np.real(mpt.mpm_matrix_to_mpmath_numpy_array(f_tilde_at_x))

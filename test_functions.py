@@ -110,6 +110,13 @@ class TestFunctions:
         else:
             return 1
 
+    def get_func_fourier_coefficient_const_oy_range_ox(self, num_of_oxs, oy):
+        m = num_of_oxs
+        coeff_array = mpm.matrix(2 * m + 1, 1)
+        for ox in range(-m, m + 1):
+            coeff_array[m + ox, 1] = self.get_func_fourier_coefficient(ox, oy)
+        return coeff_array
+
     def __get_fourier_func_type_1_coefficient(self, ox, oy):
         if oy == 0 or ox == -oy:
             return 0
