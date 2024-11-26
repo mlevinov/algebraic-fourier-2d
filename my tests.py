@@ -17,28 +17,28 @@ def create_oy_values(oy_strt_val=15, num_of_oy_vals=10, inc_oy=10):
         oy_arr.append(oy)
     return oy_arr
 
-def approx_coefficients_using_psi_at_x(x, oy, num_of_coeff_for_psi, test_func_type, reconstruction_order):
-    psi_jump_loc = -const.MP_PI
-    tf = TestFunctions(func_type=test_func_type)
-    exact_coeff_arr = tf.get_func_fourier_coefficient_const_oy_range_ox(oy, num_of_coeff_for_psi)
-    psi_jump_mag = sj.approximate_jump_magnitudes(reconstruction_order, func_coeff_array=exact_coeff_arr,
-                                                  approximated_jump_location=psi_jump_loc, known_jump_loc=True)
-    approx_psi_oy_at_x = sj.psi_func_val_at_x(x=x, reconstruction_order=reconstruction_order, func_coeff_array=exact_coeff_arr,
-                                              jump_loc=psi_jump_loc, jump_mag_array=psi_jump_mag)
-    return approx_psi_oy_at_x
+
+def approx_coefficients_for_fx_using_psi(x, n_oy, test_func_type, reconstruction_order):
+    n_ox = pow(n_oy, 2)
+    coeff_for_fx = mpm.matrix(2 * n_oy, 1)
+    for oy in range(-n_oy, n_oy + 1):
+        exact_coeff_arr = TestFunctions(func_type=test_func_type).get_func_fourier_coefficient_const_oy_range_ox(oy, n_ox)
+        psi_jump_mag = sj.approximate_jump_magnitudes(reconstruction_order, func_coeff_array=exact_coeff_arr,
+                                                      approximated_jump_location=-const.MP_PI, known_jump_loc=True)
+        coeff_for_fx[n_oy + oy, 1] = sj.psi_func_val_at_x(x=x, reconstruction_order=reconstruction_order,
+                                                          func_coeff_array=exact_coeff_arr,jump_loc=psi_jump_loc,
+                                                          jump_mag_array=psi_jump_mag)
+    return coeff_for_fx
 
 
-def create_coefficients_for_test_func_at_x(x, oy, num_of_coeff_for_psi, test_func_type, reconstruction_order, coeff_array):
-    psi_jump_loc = -const.MP_PI
-    tf = TestFunctions(func_type=test_func_type)
-    m = num_of_coeff_for_psi
-    exact_coeff_arr = tf.get_func_fourier_coefficient_const_oy_range_ox(oy, num_of_coeff_for_psi)
-    psi_jump_mag = sj.approximate_jump_magnitudes(reconstruction_order, func_coeff_array=exact_coeff_arr,
-                                                  approximated_jump_location=psi_jump_loc, known_jump_loc=True)
-    approx_psi_oy_at_x = sj.psi_func_val_at_x(x=x, reconstruction_order=reconstruction_order, func_coeff_array=exact_coeff_arr,
-                                              jump_loc=psi_jump_loc, jump_mag_array=psi_jump_mag)
-    psi_oy_at_x[moy + oy, 0] = sj.func_val_at_x(x=x, reconstruction_order=ro, func_coeff_array=func_coeff,
-                                                jump_loc=psi_jump_loc, jump_mag_array=psi_jump_mag)
+def get_approx_fx_and_approx_jump_loc(x, Y, oy_vals, test_func_type, reconstruction_order):
+    ny = len(Y)
+    num_of_oy_vals = len(oy_vals)
+    approx_fx = mpm.matrix(ny, num_of_oy_vals)
+    for n in range(num_of_oy_vals):
+        n_oy = oy_vals[n]
+        approx_coefficients_for_fx_using_psi(x=x, n_oy=n_oy, )
+        approx_fx[:, n] = 0
     return 0
 
 
