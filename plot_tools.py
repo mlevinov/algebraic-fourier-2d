@@ -1,4 +1,3 @@
-import sys
 import mpmath as mpm
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,7 +6,6 @@ import constants as const
 import mpmath_tools as mpt
 from test_functions import TestFunctions
 from tqdm import tqdm
-import inspect
 
 
 def create_oy_values(oy_strt_val=15, num_of_oy_vals=10, inc_oy=10):
@@ -25,21 +23,33 @@ def approx_coefficients_for_fx_using_psi(x, n_oy, test_func_type, reconstruction
         exact_coeff_arr = TestFunctions(func_type=test_func_type).get_func_fourier_coefficient_const_oy_range_ox(oy, n_ox)
         psi_jump_mag = sj.approximate_jump_magnitudes(reconstruction_order, func_coeff_array=exact_coeff_arr,
                                                       approximated_jump_location=-const.MP_PI, known_jump_loc=True)
-        coeff_for_fx[n_oy + oy, 1] = sj.psi_func_val_at_x(x=x, reconstruction_order=reconstruction_order,
-                                                          func_coeff_array=exact_coeff_arr,jump_loc=psi_jump_loc,
+        coeff_for_fx[n_oy + oy, 0] = sj.psi_func_val_at_x(x=x, reconstruction_order=reconstruction_order,
+                                                          func_coeff_array=exact_coeff_arr, jump_loc=psi_jump_loc,
                                                           jump_mag_array=psi_jump_mag)
     return coeff_for_fx
 
 
-def get_approx_fx_and_approx_jump_loc(x, Y, oy_vals, test_func_type, reconstruction_order):
+def get_approx_of_fx_jump_loc_jump_mag(x, Y, n_oy, test_func_type, reconstruction_order):
     ny = len(Y)
-    num_of_oy_vals = len(oy_vals)
-    approx_fx = mpm.matrix(ny, num_of_oy_vals)
-    for n in range(num_of_oy_vals):
-        n_oy = oy_vals[n]
-        approx_coefficients_for_fx_using_psi(x=x, n_oy=n_oy, )
-        approx_fx[:, n] = 0
-    return 0
+    approx_fx = mpm.matrix(ny, 1)
+    coeff_for_fx = approx_coefficients_for_fx_using_psi(x=x, n_oy=n_oy, test_func_type=test_func_type,
+                                                        reconstruction_order=reconstruction_order)
+    approx_jump_loc = sj.approximate_jump_location(reconstruction_order=reconstruction_order, func_coeff_array=coeff_for_fx,
+                                                   half_order_flag=False, get_omega_flag=False)
+    approx_jump_mag = sj.approximate_jump_magnitudes(reconstruction_order=reconstruction_order, func_coeff_array=coeff_for_fx,
+                                                     approximated_jump_location=approx_jump_loc, known_jump_loc=False)
+    for iy in range(ny):
+        y = Y[iy]
+        approx_fx[iy, 0] = sj.func_val_at_x(x=y, reconstruction_order=reconstruction_order, func_coeff_array=coeff_for_fx,
+                                            jump_loc=approx_jump_loc, jump_mag_array=approx_jump_mag)
+    return approx_fx, approx_jump_loc, approx_jump_mag
+
+
+def get_max_err(exact_vals, approx_vals):
+    norm_mat = mpt.elementwise_norm_matrix(exact_vals, approx_vals)
+    ind = mpt.find_max_val_index(norm_mat)
+    max_val = norm_mat[ind[0], ind[1]]
+    return max_val
 
 
 if __name__ == "__main__":

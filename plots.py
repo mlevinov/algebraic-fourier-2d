@@ -1,4 +1,3 @@
-import sys
 import mpmath as mpm
 import numpy as np
 import matplotlib as mpl
@@ -8,6 +7,7 @@ import constants as const
 import mpmath_tools as mpt
 from test_functions import TestFunctions
 from tqdm import tqdm
+import plot_tools as plt_t
 
 
 def plot_exact_f_and_exact_jump_curve(X, Y, func_vals, test_func_type):
@@ -65,8 +65,12 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
     plt.show()
 
 
-def plot_err_in_approx_f_at_x_vs_n(x, Y, oy_val_arr, f_tilde_at_x, exact_f_at_x):
-
+def plot_err_in_approx_f_at_x_vs_n(x, Y, oy_strt_val, num_of_oy_vals, inc_oy, reconstruction_order, test_func_type=1):
+    oy_vals = plt_t.create_oy_values(oy_strt_val=oy_strt_val, num_of_oy_vals=num_of_oy_vals, inc_oy=inc_oy)
+    n_oy = len(oy_vals)
+    for n in range(n_oy):
+        plt_t.get_approx_of_fx_jump_loc_jump_mag(x=x, Y=Y, n_oy=n, test_func_type=test_func_type,
+                                                 reconstruction_order=reconstruction_order)
     np_exact_f_at_x_val = np.real(mpt.mpm_matrix_to_mpmath_numpy_array(exact_f_at_x))
     np_f_tilde_at_x_val = np.real(mpt.mpm_matrix_to_mpmath_numpy_array(f_tilde_at_x))
     for k in range(len(X)):

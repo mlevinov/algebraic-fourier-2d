@@ -50,8 +50,9 @@ def find_max_val_index(mpmath_arr):
 
     """
     np_arr = mpm_matrix_to_mpmath_numpy_array(mpmath_arr)
-    ind = np.unravel_index(np.argmax(np_arr, axis=None), np_arr.shape)
-    return ind
+    max_index_flat = np.argmax(np_arr)
+    max_index = np.unravel_index(max_index_flat, np_arr.shape)
+    return max_index
 
 
 def find_min_val_index(mpmath_arr):
@@ -127,7 +128,7 @@ def elementwise_norm_matrix(mp_arr1, mp_arr2):
         try:
             norm_mat = mp_arr1 - mp_arr2
         except ValueError:
-            print('incompatible dimensions for subtraction, trying transposing')
+            print('incompatible dimensions for subtraction --> transposing')
             norm_mat = mp_arr1 - mp_arr2.T
             print('transposing worked, continuing\n')
     except ValueError as ve:
