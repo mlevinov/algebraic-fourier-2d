@@ -65,31 +65,38 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
     plt.show()
 
 
-def plot_err_in_approx_f_at_x_vs_n(x, Y, oy_strt_val, num_of_oy_vals, inc_oy, reconstruction_order, test_func_type=1):
-    oy_vals = plt_t.create_oy_values(oy_strt_val=oy_strt_val, num_of_oy_vals=num_of_oy_vals, inc_oy=inc_oy)
-    n_oy = len(oy_vals)
-    for n in range(n_oy):
-        plt_t.get_approx_of_fx_jump_loc_jump_mag(x=x, Y=Y, n_oy=n, test_func_type=test_func_type,
-                                                 reconstruction_order=reconstruction_order)
-    np_exact_f_at_x_val = np.real(mpt.mpm_matrix_to_mpmath_numpy_array(exact_f_at_x))
-    np_f_tilde_at_x_val = np.real(mpt.mpm_matrix_to_mpmath_numpy_array(f_tilde_at_x))
-    for k in range(len(X)):
-        Zs[k] = minF
-    if test_func_type == 1 or test_func_type == 2:
-        plt.suptitle(r'$\tilde{f}$' + ' and ' + r'$\tilde{\xi}ֿ\approx$%s' % 'x')
-        ax.scatter(X, np_jump_curve_val, Zs, c='r', marker='^')
-    else:  # type 3
-        plt.suptitle(r'$\tilde{f}$' + ' and ' + r'$\tilde{\xi}ֿ\approx$%s' % 'x/2')
-        ax.scatter(X, np_jump_curve_val, Zs, c='r', marker='^')
-    # fake lines for adding legend to a surface plot
-    fake2Dline1 = mpl.lines.Line2D([0], [0], linestyle="none", c='b', marker='o')
-    fake2Dline2 = mpl.lines.Line2D([0], [0], linestyle="none", c='r', marker='o')
-    ax.legend([fake2Dline1, fake2Dline2], [r'$\tilde{f}$', r'$\tilde{\xi}$'], numpoints=1)
+def plot_err_in_approx_fx_vs_n(x, Y, oy_vals_arr, approxFxErr, reconstruction_order, test_func_type=1):
+    decay_rate_arr = np.power(oy_vals_arr, -reconstruction_order-1)
+    err_f_np = mpt.mpmath_num_to_numpy(approxFxErr)
+    fig, ax = plt.subplots(figsize=[10, 6])
+    title01 = r'$\Delta F_x$ vs $\Delta\mathcal{T}(F_x)$ vs $N$'
+    title02 = r'$d = %d,\; x = %s $' % (reconstruction_order, x)
+    ax.set_title(title01 + '\n' + title02, fontsize="20")
+    ax.plot(oy_vals_arr, decay_rate_arr, '^-.', label=r'$N^{-%d}$' % (reconstruction_order + 1))
+    ax.plot(OY, np.real(err_f_np), '*--', label=r'$\Delta(F_x)$')
+    ax.plot(OY, np.real(err_fourier_np), 'd:', label=r'$\Delta\mathcal{T}(F_x)$')
+    ax.set_xlabel(r'$N$', fontsize="20")
+    ax.set_ylabel(r'$\Delta F_x$' + ' & ' + r'$\Delta\mathcal{T}(F_x)$', fontsize="20")
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.legend(fontsize="18", markerscale=1.5)
+    if save_plot:
+        path = "plots/err in fx vs fourier vs n/"
+        name = "errInFx_x-{}_fCase-{}_N-{}-to-{}_fRo-{}.pdf".format(x, f_case, OY[0], OY[len(OY) - 1], f_reconstruction_order)
+        try:
+            os.mkdir("./plots")
+        except OSError:
+            pass
+        try:
+            os.mkdir("./plots/err in fx vs fourier vs n")
+        except OSError:
+            pass
+        plt.savefig(path + name, format="pdf")
 
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.view_init(15, 280)
-    plt.show()
+    if not show_plot:
+        plt.close()
+    else:
+        plt.show()
     return 0
 
 

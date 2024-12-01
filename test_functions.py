@@ -15,7 +15,7 @@ class TestFunctions:
         else:
             self.smoothness_order = const.F2_F3_SMOOTHNESS_ORDER
 
-    def get_jump_magnitudes_at_x(self, x):
+    def get_jump_magnitudes_of_fx(self, x):
         if self.func_type == const.FUNC_TYPE_F1:
             jump_magnitudes = mpm.matrix(const.F1_SMOOTHNESS_ORDER + 1, 1)
             for l in range(const.F1_SMOOTHNESS_ORDER + 1):
@@ -37,6 +37,12 @@ class TestFunctions:
             return self.__get_func_type_2_val_at_point(x, y)
         else:
             return self.__get_func_type_3_val_at_point(x, y)
+
+    def get_jump_loc_of_fx(self, x):
+        if self.func_type == const.FUNC_TYPE_F1 or self.func_type == const.FUNC_TYPE_F2:
+            return x
+        else:
+            return x / 2
 
     def __get_func_type_1_val_at_point(self, x, y):
         new_x = mpm.fsub(y, x)

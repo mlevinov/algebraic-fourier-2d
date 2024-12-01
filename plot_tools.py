@@ -29,7 +29,7 @@ def approx_coefficients_for_fx_using_psi(x, n_oy, test_func_type, reconstruction
     return coeff_for_fx
 
 
-def get_approx_of_fx_jump_loc_jump_mag(x, Y, n_oy, test_func_type, reconstruction_order):
+def get_approxFx_approxJumpLoc_approxJumpMag(x, Y, n_oy, test_func_type, reconstruction_order):
     ny = len(Y)
     approx_fx = mpm.matrix(ny, 1)
     coeff_for_fx = approx_coefficients_for_fx_using_psi(x=x, n_oy=n_oy, test_func_type=test_func_type,
@@ -45,11 +45,36 @@ def get_approx_of_fx_jump_loc_jump_mag(x, Y, n_oy, test_func_type, reconstructio
     return approx_fx, approx_jump_loc, approx_jump_mag
 
 
-def get_max_err(exact_vals, approx_vals):
-    norm_mat = mpt.elementwise_norm_matrix(exact_vals, approx_vals)
-    ind = mpt.find_max_val_index(norm_mat)
-    max_val = norm_mat[ind[0], ind[1]]
-    return max_val
+def get_fxErr_jumpLocErr_jumpMagErr(x, Y, n_oy, test_func_type, reconstruction_order):
+    tf = TestFunctions(func_type=test_func_type)
+    exactFx = tf.get_func_slice_at_x(x=x, Y=Y)
+    exactJumpLoc = tf.get_jump_loc_of_fx(x=x)
+    exactJumpMag = tf.get_jump_magnitudes_of_fx(x=x)
+    approx_fx, approx_jump_loc, approx_jump_mag = get_approxFx_approxJumpLoc_approxJumpMag(x=x, Y=Y, n_oy=n_oy,
+                                                                                           test_func_type=test_func_type,
+                                                                                           reconstruction_order=reconstruction_order)
+    fx_max_err = mpt.get_max_err_val(exact_vals=exactFx, approx_vals=approx_fx)
+    jump_loc_err = mpm.fabs(mpm.fsub(exactJumpLoc, approx_jump_loc))
+    jump_mag_err = mpt.elementwise_norm_matrix(exactJumpMag, approx_jump_mag)
+
+    return fx_max_err, jump_loc_err, jump_mag_err
+
+
+def get_fxErr_jumpLocErr_jumpMagErr_different_oy_vals(x, Y, oy_strt_val, num_of_oy_vals, inc_oy, test_func_type, reconstruction_order):
+    oy_vals_arr = create_oy_values(oy_strt_val=oy_strt_val, num_of_oy_vals=num_of_oy_vals, inc_oy=inc_oy)
+    n_oy = len(oy_vals_arr)
+    decay_rate = []
+    fx_max_err_arr = mpm.matrix(n_oy, 1)
+    jump_loc_err_arr = mpm.matrix(n_oy, 1)
+    jump_mag_err_arr = mpm.matrix(n_oy, reconstruction_order + 1)
+    for n in range(n_oy):
+        oy = oy_vals_arr[n]
+        t = get_fxErr_jumpLocErr_jumpMagErr(x=x, Y=Y, n_oy=oy, test_func_type=test_func_type, reconstruction_order=reconstruction_order)
+        fx_max_err_arr[n, 0] = t[0]
+        jump_loc_err_arr[n, 0] = t[1]
+        jump_mag_err_arr[n, :] = t[2].T[0, :]
+
+    return oy_vals_arr, fx_max_err_arr, jump_loc_err_arr, jump_mag_err_arr
 
 
 if __name__ == "__main__":

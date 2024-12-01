@@ -55,6 +55,13 @@ def find_max_val_index(mpmath_arr):
     return max_index
 
 
+def get_max_err_val(exact_vals, approx_vals):
+    norm_mat = elementwise_norm_matrix(exact_vals, approx_vals)
+    ind = find_max_val_index(norm_mat)
+    max_val = norm_mat[ind[0], ind[1]]
+    return max_val
+
+
 def find_min_val_index(mpmath_arr):
     """
         finding the index of the minimal value in a given matrix
