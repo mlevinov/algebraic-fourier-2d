@@ -66,21 +66,17 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
     plt.show()
 
 
-def plot_err_in_approx_fx_vs_n(x, oy_vals_arr, deca_rate_arr, approx_fx_err, reconstruction_order,
+def plot_err_in_approx_fx_vs_n(x, oy_vals_arr, decay_rate_arr, approx_fx_err, reconstruction_order,
                                test_func_type=const.FUNC_TYPE_F1, show_plot=True, save_plot=False):
-    decay_rate_arr = []
-    for oy in range(len(oy_vals_arr)):
-        decay_rate_arr.append(pow(oy_vals_arr[oy], -reconstruction_order-1))
-
     err_fx_np = mpt.mpm_matrix_to_mpmath_numpy_array(approx_fx_err)
     fig, ax = plt.subplots(figsize=[10, 6])
     title01 = r'$\Delta F_x$ vs $N$'
-    title02 = r'$d = %d,\; x = %s $' % (reconstruction_order, x)
+    title02 = r'$\text{reconstruction order} = %d,\; x = %s $' % (reconstruction_order, x)
     ax.set_title(title01 + '\n' + title02, fontsize="20")
     ax.plot(oy_vals_arr, decay_rate_arr, '^-.', label=r'$N^{-%d}$' % (reconstruction_order + 1))
     ax.plot(oy_vals_arr, np.real(err_fx_np), '*--', label=r'$\Delta(F_x)$')
     ax.set_xlabel(r'$N$', fontsize="20")
-    ax.set_ylabel(r'$\Delta F_x$' + ' & ' + r'$\Delta\mathcal{T}(F_x)$', fontsize="20")
+    ax.set_ylabel(r'$\Delta F_x$', fontsize="20")
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.legend(fontsize="18", markerscale=1.5)
@@ -105,26 +101,22 @@ def plot_err_in_approx_fx_vs_n(x, oy_vals_arr, deca_rate_arr, approx_fx_err, rec
     return 0
 
 
-def plot_err_in_approx_jump_location_at_x_vs_n(x, oy_vals_arr, deca_rate_arr, approx_fx_jump_loc_err, reconstruction_order,
-                               test_func_type=const.FUNC_TYPE_F1, show_plot=True, save_plot=False):
-    decay_rate_arr = []
-    for oy in range(len(oy_vals_arr)):
-        decay_rate_arr.append(pow(oy_vals_arr[oy], -reconstruction_order - 1))
-
-    err_fx_np = mpt.mpm_matrix_to_mpmath_numpy_array(approx_fx_jump_loc_err)
+def plot_err_in_approx_jump_location_at_x_vs_n(x, oy_vals_arr, decay_rate_arr, approx_fx_jump_loc_err, reconstruction_order,
+                                               test_func_type=const.FUNC_TYPE_F1, show_plot=True, save_plot=False):
+    approx_fx_jump_loc_err_np = mpt.mpm_matrix_to_mpmath_numpy_array(approx_fx_jump_loc_err)
     fig, ax = plt.subplots(figsize=[10, 6])
     title01 = r'$\Delta \xi(x)$ vs $N$'
-    title02 = r'$d = %d,\; x = %s $' % (reconstruction_order, x)
+    title02 = r'$\text{reconstruction order} = %d,\; x = %s $' % (reconstruction_order, x)
     ax.set_title(title01 + '\n' + title02, fontsize="20")
     ax.plot(oy_vals_arr, decay_rate_arr, '^-.', label=r'$N^{-%d}$' % (reconstruction_order + 1))
-    ax.plot(oy_vals_arr, np.real(err_fx_np), '*--', label=r'$\Delta(F_x)$')
+    ax.plot(oy_vals_arr, np.real(approx_fx_jump_loc_err_np), '*--', label=r'$\Delta(F_x)$')
     ax.set_xlabel(r'$N$', fontsize="20")
     ax.set_ylabel(r'$\Delta \xi(x)$', fontsize="20")
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.legend(fontsize="18", markerscale=1.5)
     if save_plot:
-        path = "plots/err in fx vs fourier vs n/"
+        path = "plots/err in jump_loc vs n/"
         name = "errInJumpLoc-{}_fCase-{}_N-{}-to-{}_fRo-{}.pdf".format(x, test_func_type, oy_vals_arr[0],
                                                                        oy_vals_arr[len(oy_vals_arr) - 1], reconstruction_order)
         try:
@@ -144,7 +136,40 @@ def plot_err_in_approx_jump_location_at_x_vs_n(x, oy_vals_arr, deca_rate_arr, ap
     return 0
 
 
-def plot_err_in_approx_jump_magnitudes_vs_n():
+def plot_err_in_approx_jump_magnitudes_vs_n(x, oy_vals_arr, decay_rate_arr, approx_fx_jump_mag_err, reconstruction_order,
+                               test_func_type=const.FUNC_TYPE_F1, show_plot=True, save_plot=False):
+    approx_fx_jump_loc_err_np = mpt.mpm_matrix_to_mpmath_numpy_array(approx_fx_jump_mag_err)
+    fig, ax = plt.subplots(figsize=[10, 6])
+    title01 = r'$\Delta \A_l(x)$ vs $N$'
+    title02 = r'$\text{reconstruction order} = %d,\; x = %s $' % (reconstruction_order, x)
+    ax.set_title(title01 + '\n' + title02, fontsize="20")
+    ax.plot(oy_vals_arr, decay_rate_arr, '^-.', label=r'$N^{-%d}$' % (reconstruction_order + 1))
+    # for l in range(reconstruction_order + 1):
+        # a_l_err =
+        ax.plot(oy_vals_arr, np.real(approx_fx_jump_loc_err_np), '*--', label=r'$\Delta(F_x)$')
+    ax.set_xlabel(r'$N$', fontsize="20")
+    ax.set_ylabel(r'$\Delta \A_l(x)$', fontsize="20")
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.legend(fontsize="18", markerscale=1.5)
+    if save_plot:
+        path = "plots/err in jump_mag vs n/"
+        name = "errInJumpMag-{}_fCase-{}_N-{}-to-{}_fRo-{}.pdf".format(x, test_func_type, oy_vals_arr[0],
+                                                                       oy_vals_arr[len(oy_vals_arr) - 1], reconstruction_order)
+        try:
+            os.mkdir("./plots")
+        except OSError:
+            pass
+        try:
+            os.mkdir("./plots/err in fx vs fourier vs n")
+        except OSError:
+            pass
+        plt.savefig(path + name, format="pdf")
+
+    if not show_plot:
+        plt.close()
+    else:
+        plt.show()
     return 0
 
 
@@ -167,10 +192,10 @@ if __name__ == "__main__":
                                                                    inc_oy=inc_oy, test_func_type=test_func_type,
                                                                    reconstruction_order=reconstruction_order)
 
-    # plot_err_in_approx_fx_vs_n(x=x, oy_vals_arr=tpl[0], deca_rate_arr=tpl[1], approx_fx_err=tpl[2], reconstruction_order=reconstruction_order,
-    #                            test_func_type=test_func_type, show_plot=True, save_plot=False)
+    plot_err_in_approx_fx_vs_n(x=x, oy_vals_arr=tpl[0], decay_rate_arr=tpl[1], approx_fx_err=tpl[2], reconstruction_order=reconstruction_order,
+                               test_func_type=test_func_type, show_plot=True, save_plot=False)
 
-    plot_err_in_approx_jump_location_at_x_vs_n(x=x, oy_vals_arr=tpl[0], deca_rate_arr=tpl[1], approx_fx_jump_loc_err=tpl[3],
+    plot_err_in_approx_jump_location_at_x_vs_n(x=x, oy_vals_arr=tpl[0], decay_rate_arr=tpl[1], approx_fx_jump_loc_err=tpl[3],
                                                reconstruction_order=reconstruction_order, test_func_type=test_func_type,
                                                show_plot=True, save_plot=False)
 
