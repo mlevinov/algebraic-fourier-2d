@@ -46,7 +46,7 @@ class TestFunctions:
 
     def __get_func_type_1_val_at_point(self, x, y):
         new_x = mpm.fsub(y, x)
-        jump_magnitudes = self.get_jump_magnitudes_at_x(x)
+        jump_magnitudes = self.get_jump_magnitudes_of_fx(x)
         s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F1_SMOOTHNESS_ORDER,
                                    jump_loc=const.DEFAULT_JUMP_LOC, jump_mag_array=jump_magnitudes)
         return s
@@ -72,10 +72,10 @@ class TestFunctions:
         # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
         ny = len(Y)
         func_values_at_x = mpm.matrix(ny, 1)
-        if Y.cols != 1:
+        if Y.shape[0] != ny:
             Y = Y.T
         for iy in range(ny):
-            func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy, 0])
+            func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy])
         return func_values_at_x
 
     def get_func_val(self, X, Y):
@@ -120,7 +120,7 @@ class TestFunctions:
         m = num_of_oxs
         coeff_array = mpm.matrix(2 * m + 1, 1)
         for ox in range(-m, m + 1):
-            coeff_array[m + ox, 1] = self.get_func_fourier_coefficient(ox, oy)
+            coeff_array[m + ox, 0] = self.get_func_fourier_coefficient(ox, oy)
         return coeff_array
 
     def __get_fourier_func_type_1_coefficient(self, ox, oy):

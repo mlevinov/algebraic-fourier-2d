@@ -8,23 +8,25 @@ from test_functions import TestFunctions
 from tqdm import tqdm
 
 
-def create_oy_values(oy_strt_val=15, num_of_oy_vals=10, inc_oy=10):
+def create_oy_values(oy_strt_val=15, num_of_oy_vals=10, inc_oy=10, reconstruction_order=0):
     end_oy_val = oy_strt_val + (num_of_oy_vals * inc_oy)
     oy_arr = []
+    decay_rate = []
     for oy in range(oy_strt_val, end_oy_val, inc_oy):
         oy_arr.append(oy)
-    return oy_arr
+        decay_rate.append(pow(oy, -reconstruction_order-1))
+    return oy_arr, decay_rate
 
 
 def approx_coefficients_for_fx_using_psi(x, n_oy, test_func_type, reconstruction_order):
     n_ox = pow(n_oy, 2)
-    coeff_for_fx = mpm.matrix(2 * n_oy, 1)
+    coeff_for_fx = mpm.matrix(2 * n_oy + 1, 1)
     for oy in range(-n_oy, n_oy + 1):
-        exact_coeff_arr = TestFunctions(func_type=test_func_type).get_func_fourier_coefficient_const_oy_range_ox(oy, n_ox)
+        exact_coeff_arr = TestFunctions(func_type=test_func_type).get_func_fourier_coefficient_const_oy_range_ox(num_of_oxs=n_ox, oy=oy)
         psi_jump_mag = sj.approximate_jump_magnitudes(reconstruction_order, func_coeff_array=exact_coeff_arr,
-                                                      approximated_jump_location=-const.MP_PI, known_jump_loc=True)
+                                                      approximated_jump_location=const.PSI_JUMP_LOC, known_jump_loc=True)
         coeff_for_fx[n_oy + oy, 0] = sj.psi_func_val_at_x(x=x, reconstruction_order=reconstruction_order,
-                                                          func_coeff_array=exact_coeff_arr, jump_loc=psi_jump_loc,
+                                                          func_coeff_array=exact_coeff_arr, jump_loc=const.PSI_JUMP_LOC,
                                                           jump_mag_array=psi_jump_mag)
     return coeff_for_fx
 
@@ -55,26 +57,26 @@ def get_fxErr_jumpLocErr_jumpMagErr(x, Y, n_oy, test_func_type, reconstruction_o
                                                                                            reconstruction_order=reconstruction_order)
     fx_max_err = mpt.get_max_err_val(exact_vals=exactFx, approx_vals=approx_fx)
     jump_loc_err = mpm.fabs(mpm.fsub(exactJumpLoc, approx_jump_loc))
-    jump_mag_err = mpt.elementwise_norm_matrix(exactJumpMag, approx_jump_mag)
+    jump_mag_err = mpt.elementwise_norm_matrix(exactJumpMag[:approx_jump_mag.rows, 0], approx_jump_mag)
 
     return fx_max_err, jump_loc_err, jump_mag_err
 
 
 def get_fxErr_jumpLocErr_jumpMagErr_different_oy_vals(x, Y, oy_strt_val, num_of_oy_vals, inc_oy, test_func_type, reconstruction_order):
-    oy_vals_arr = create_oy_values(oy_strt_val=oy_strt_val, num_of_oy_vals=num_of_oy_vals, inc_oy=inc_oy)
+    oy_vals_arr, decay_rate = create_oy_values(oy_strt_val=oy_strt_val, num_of_oy_vals=num_of_oy_vals, inc_oy=inc_oy,
+                                               reconstruction_order=reconstruction_order)
     n_oy = len(oy_vals_arr)
-    decay_rate = []
     fx_max_err_arr = mpm.matrix(n_oy, 1)
     jump_loc_err_arr = mpm.matrix(n_oy, 1)
     jump_mag_err_arr = mpm.matrix(n_oy, reconstruction_order + 1)
-    for n in range(n_oy):
+    for n in tqdm(range(n_oy)):
         oy = oy_vals_arr[n]
         t = get_fxErr_jumpLocErr_jumpMagErr(x=x, Y=Y, n_oy=oy, test_func_type=test_func_type, reconstruction_order=reconstruction_order)
         fx_max_err_arr[n, 0] = t[0]
         jump_loc_err_arr[n, 0] = t[1]
         jump_mag_err_arr[n, :] = t[2].T[0, :]
 
-    return oy_vals_arr, fx_max_err_arr, jump_loc_err_arr, jump_mag_err_arr
+    return oy_vals_arr, decay_rate, fx_max_err_arr, jump_loc_err_arr, jump_mag_err_arr
 
 
 if __name__ == "__main__":

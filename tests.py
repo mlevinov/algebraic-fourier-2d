@@ -11,8 +11,12 @@ if __name__ == "__main__":
     a = mpm.matrix([[1, 2], [3, 4], [5, 6]])
     print(a)
     print()
-    a0 = a[:, 0]
-    print(a0)
+    print(a[:1, 0])
+    print()
+    print(a[:a.rows, 0])
+    print()
+    print('a rows = ')
+    print(a.rows)
     # aa0 = a[:, 0]
     # print(aa0)
 
