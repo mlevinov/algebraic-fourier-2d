@@ -1,6 +1,5 @@
 import mpmath as mpm
 import numpy as np
-import matplotlib.pyplot as plt
 import single_jump_param_recovery as sjpr
 from tqdm import tqdm
 import constants as const
@@ -53,14 +52,14 @@ class TestFunctions:
 
     def __get_func_type_2_val_at_point(self, x, y):
         new_x = mpm.fsub(y, x)
-        jump_magnitudes = self.get_jump_magnitudes_at_x(x)
+        jump_magnitudes = self.get_jump_magnitudes_of_fx(x)
         s = sjpr.phi_func_val_at_x(x=new_x, reconstruction_order=const.F2_F3_SMOOTHNESS_ORDER,
                                    jump_loc=const.DEFAULT_JUMP_LOC, jump_mag_array=jump_magnitudes)
         return s
 
     def __get_func_type_3_val_at_point(self, x, y):
         new_x = mpm.fsub(y, mpm.fdiv(x, 2))
-        jump_magnitudes = self.get_jump_magnitudes_at_x(x)
+        jump_magnitudes = self.get_jump_magnitudes_of_fx(x)
         # jump_magnitudes = mpm.matrix(1, const.F2_F3_SMOOTHNESS_ORDER + 1)
         # for l in range(const.F2_F3_SMOOTHNESS_ORDER + 1):
         #     jump_magnitudes[0, l] = 1
@@ -72,7 +71,9 @@ class TestFunctions:
         # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
         ny = len(Y)
         func_values_at_x = mpm.matrix(ny, 1)
-        if Y.shape[0] != ny:
+        if isinstance(Y, mpm.matrix) and Y.rows != ny:
+            Y = Y.T
+        elif isinstance(Y, np.ndarray) and Y.shape[0] != ny:
             Y = Y.T
         for iy in range(ny):
             func_values_at_x[iy, 0] = self.get_func_val_at_point(x=x, y=Y[iy])
@@ -92,10 +93,10 @@ class TestFunctions:
             print('assuming X and Y are numpy ndarray type')
             YY = mpm.matrix(Y)
             XX = mpm.matrix(X)
-            for ix in range(nx):
+            for ix in tqdm(range(nx)):
                 func_val[:, ix] = self.get_func_slice_at_x(XX[ix, 0], YY)
             return func_val
-        for ix in range(nx):
+        for ix in tqdm(range(nx)):
             func_val[:, ix] = self.get_func_slice_at_x(X[ix, 0], Y)
         return func_val
 
