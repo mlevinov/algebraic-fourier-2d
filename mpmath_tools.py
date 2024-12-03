@@ -18,21 +18,17 @@ def numpy_array_to_mpmath_matrix(np_arr):
 
 def mpm_matrix_to_mpmath_numpy_array(mpmath_arr):
     """
-    Converting a mpmath matrix to a ndarry
+    Converting a mpmath matrix to a numpy.ndarry
 
     Args:
         mpmath_arr: (mpmath.matrix) a matrix of type mpmath.matrix to convert
 
     Returns:
-        ndarray: returns a ndarray from the given mpmath.matrix
+        ndarray: returns a numpy.ndarray from the given mpmath.matrix
 
     """
     if isinstance(mpmath_arr, np.ndarray):
         return mpmath_arr
-    # TODO: understand how to check if the input is of type mpmath.matrix
-    # elif isinstance(mpmath_arr, mpm.matrix):
-    #     print('not an mpmath matrix and not a numpy array type')
-    #     return 1
     else:
         mat_type = _check_type_of_mpmath_matrix(mpmath_arr)
         return np.array(mpmath_arr.tolist(), dtype=mat_type)
@@ -56,6 +52,16 @@ def find_max_val_index(mpmath_arr):
 
 
 def get_max_err_val(exact_vals, approx_vals):
+    """
+    finding the maximum value of an array which represents the
+    maximal error
+    Args:
+        exact_vals: (mpmath.matrix) a matrix containing the exact values
+        approx_vals: (mpmath.matrix) a matrix containing the approximated values
+
+    Returns:
+        mpmath.mpc: returns a mpmath.mpc of a mpmath.mpf value which is the maximal value
+    """
     norm_mat = elementwise_norm_matrix(exact_vals, approx_vals)
     ind = find_max_val_index(norm_mat)
     max_val = norm_mat[ind[0], ind[1]]

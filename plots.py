@@ -221,8 +221,8 @@ if __name__ == "__main__":
     inc_oy = 5
     test_func_type = 2
     reconstruction_order = 0
-    show_plot = False
-    save_plot = True
+    show_plot = True
+    save_plot = False
 
     ############################################################################
     ####################### Exact F and Exact Jump Curve #######################
