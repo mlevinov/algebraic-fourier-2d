@@ -1,7 +1,6 @@
-# <p style="text-align:center;"> Algebraic Reconstruction of Piecewise-Smooth Functions of Two Variables from Fourier Data </p>
-#### <p style="text-align:center;"> Thesis submitted in partial fulfilment of the requirements for the M.Sc. degree of Tel Aviv University by Levinov Michael under the supervision of Dr. Batnekov </p>
+# Algebraic Reconstruction of Piecewise-Smooth Functions of Two Variables from Fourier Data 
 
-### Description:
+## Description
 This is the implementation of the *2D algorithm* give on pages 42 which relies on the [mpmath](https://mpmath.org/) python library for arbitrary precision calculations.  
   
 * The user will be able to recreate the results shown in *Numerical Experiments* chapter (p.42).
@@ -14,3 +13,13 @@ This is the implementation of the *2D algorithm* give on pages 42 which relies o
   * $F_3(x,y)$ has a discontinuity curve $\xi(x) = \frac{x}{2}$ and jump magnitudes of $\frac{d}{dx}F_3 $ at each $x\in [-\pi, \pi)$ are equal to 1 (constant) as $d = 0,\ldots, 11$.
 * The *plot_tools.py* file contains the implementation of the algorithm on the test functions and provides the data for the *plots.py* file and can be used as an example for an implementation.
 
+## Setup
+
+```bash
+pip install mpmath tqdm matplotlib ipykernel ipywidgets
+```
+
+For documentation, install `sphinx`:
+```bash
+pip install sphinx
+```
