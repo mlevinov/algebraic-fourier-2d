@@ -32,7 +32,7 @@ def plot_exact_f_and_exact_jump_curve(X, Y, func_vals, test_func_type, show_plot
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
-    ax.view_init(15, 280)
+    ax.view_init(16,-137,0)
 
     if save_plot:
         path = "plots/exact f and exact jump curve/"
@@ -77,7 +77,8 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
-    ax.view_init(15, 280)
+    ax.view_init(16,-137,0)
+    
 
     if save_plot:
         path = "plots/approx f and approx jump curve/"
