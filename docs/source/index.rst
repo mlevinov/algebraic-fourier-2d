@@ -13,7 +13,6 @@ Welcome to Fourier 2D reconstruction toolkit!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
    modules
 
