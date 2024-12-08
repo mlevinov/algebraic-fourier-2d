@@ -142,8 +142,10 @@ class TestFunctions:
     def get_func_discontinuity_curve(self, nx=64):
         r"""
         Get the discontinuity curve of :math:`F`
+        
         Args:
             nx: (int) number of points to sample from :math:`[-\pi, \pi)` for the discontinuity curve.
+        
         Returns:
             returns a mpmath.matrix representing the discontinuity curve of :math:`F`
         """
@@ -168,9 +170,11 @@ class TestFunctions:
         Get Fourier coefficients for the specific test function where oy is constant.
         those coefficients are for approximating the :math:`\psi` function which in turn will
         be used as an approximation of the Fourier coefficients of :math:`F`
+        
         Args:
             num_of_oxs: (int) number of points in :math:`[-\pi,\pi)`
             oy: (int) a constant for calculating :math:`\left\{\ c_{oy,ox}(F)\right\}_{|ox|\leq M}`
+        
         Returns:
             returns a mpmath.matrix array with coefficients for :math:`\psi_{\omega_y}`
         """

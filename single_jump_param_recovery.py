@@ -7,9 +7,12 @@ from mpmath import libmp
 def set_mpmath_precision(dps=20):
     """
     setting the precision for the mpmath library
+    
     args:
         dps: (int) - number of significant numbers
-    returns: no return
+    
+    returns:
+        None
     """
     mpm.mp.dps = dps
 
@@ -17,6 +20,7 @@ def set_mpmath_precision(dps=20):
 def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
     r"""
     calculate :math:`\phi(x)`
+    
     Args:
         x: (mpmath.mpf or float) :math:`x \in [-\pi,\pi)`
         reconstruction_order: (int) - chosen reconstruction order for :math:`F_{x}` or :math:`\psi_{\omega_y}`
@@ -40,6 +44,7 @@ def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
 def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
     r"""
     calculate the value of :math:`\psi_{\omega_y}(x)`
+    
     Args:
         x: :math:`x\in [-\pi, \pi)`
         reconstruction_order: (int) - chosen reconstruction order for :math:`\psi_{\omega_y}`
@@ -66,6 +71,7 @@ def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_
 def func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
     r"""
     Approximated value of :math:`F_x(y)` (x is just a placeholder for a value in :math:`[-\pi, \pi)`
+    
     Args:
         x: :math:`x \in [-\pi, \pi)`
         reconstruction_order: (int) - reconstruction order for :math:`\psi_{\omega_y}\text{ and } F_x`
@@ -87,6 +93,7 @@ def func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_
 def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
     r"""
     calculates the roots of :math:`q_N^d` where d is the reconstruction order
+    
     Args:
         reconstruction_order: (int) - reconstruction order for :math:`\psi_{\omega_y}\text{ and } F_x`
         func_coeff_array: (mpmath.matrix) - exact Fourier coefficients for :math:`\psi_{\omega_y}` or approximated Fourier coefficients for :math:`Fx`
@@ -125,6 +132,7 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
 def approximate_jump_location(reconstruction_order, func_coeff_array, half_order_flag=False, get_omega_flag=False):
     r"""
     Calculating the approximated jump location of :math:`\psi_{\omega_y}\text{ or } F_x`
+    
     Args:
         reconstruction_order:
         func_coeff_array:
@@ -132,7 +140,7 @@ def approximate_jump_location(reconstruction_order, func_coeff_array, half_order
         get_omega_flag:
 
     Returns:
-
+        returns the approximated jump location of :math:`\psi_{\omega_y}\text{ or } F_x`
     """
     m = func_coeff_array.rows // 2
     if half_order_flag:
