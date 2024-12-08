@@ -15,6 +15,16 @@ class TestFunctions:
             self.smoothness_order = const.F2_F3_SMOOTHNESS_ORDER
 
     def get_jump_magnitudes_of_fx(self, x):
+        """
+        get the exact jump magnitudes of a slice Fx
+
+        Args:
+            x: (mpmath.mpf) a point in :math:`[-\pi, \pi)`
+
+        Returns:
+            returns the exact jump magnitudes of :math:`F_x` in a mpmath.matrix type
+
+        """
         if self.func_type == const.FUNC_TYPE_F1:
             jump_magnitudes = mpm.matrix(const.F1_SMOOTHNESS_ORDER + 1, 1)
             for l in range(const.F1_SMOOTHNESS_ORDER + 1):
@@ -38,6 +48,15 @@ class TestFunctions:
             return self.__get_func_type_3_val_at_point(x, y)
 
     def get_jump_loc_of_fx(self, x):
+        """
+        get the exact jump location of a slice :math:`F_x`
+
+        Args:
+            x: (mpmath.mpf) a point in :math:`[-\pi, \pi)`
+
+        Returns:
+            returns the exact value for the jump location of a slice :math:`F_x` of type mpmath.mpf
+        """
         if self.func_type == const.FUNC_TYPE_F1 or self.func_type == const.FUNC_TYPE_F2:
             return x
         else:
@@ -68,7 +87,17 @@ class TestFunctions:
         return s
 
     def get_func_slice_at_x(self, x, Y):
-        # assuming Y is a mpm matrix of order n * 1 and returning same order matrix
+        """
+        get the exact values of a slice :math:`F_x`
+
+        Args:
+            x: (mpmath.mpf) a point in :math:`[-\pi, \pi)`
+            Y: (mpmath.matrix or numpy.ndarray) a subset of :math:`[-\pi, \pi)`
+
+        Returns:
+            returns a mpmath.matrix which represents the exact
+            values of :math:`F_x` over :math:`Y \subset [-\pi, \pi)`
+        """
         ny = len(Y)
         func_values_at_x = mpm.matrix(ny, 1)
         if isinstance(Y, mpm.matrix) and Y.rows != ny:
@@ -80,7 +109,17 @@ class TestFunctions:
         return func_values_at_x
 
     def get_func_val(self, X, Y):
-        # assuming Y and X are column mpmath vectors (of order n * 1 and m * 1 respectively)
+        """
+        get the exact values of :math:`F`
+
+        Args:
+            X: (mpmath.matrix or numpy.ndarray) :math:`X \subseteq [-\pi,\pi)`
+            Y: (mpmath.matrix or numpy.ndarray) :math:`Y \subseteq [-\pi,\pi)`
+
+        Returns:
+            returns a mpmath.matrix representing
+            :math:`F` over :math:`X\times Y`
+        """
         ny = len(Y)
         nx = len(X)
         func_val = mpm.matrix(ny, nx)
@@ -101,6 +140,13 @@ class TestFunctions:
         return func_val
 
     def get_func_discontinuity_curve(self, nx=64):
+        """
+        get the discontinuity curve of :math:`F`
+        Args:
+            nx: (int) number of points to sample from :math:`[-\pi, \pi)` for the discontinuity curve.
+        Returns:
+            returns a mpmath.matrix representing the discontinuity curve of :math:`F`
+        """
         X = np.linspace(-np.pi + const.EPS, np.pi, nx)
         if self.func_type == const.FUNC_TYPE_F1 or self.func_type == const.FUNC_TYPE_F2:
             return X
@@ -118,6 +164,16 @@ class TestFunctions:
             return 1
 
     def get_func_fourier_coefficient_const_oy_range_ox(self, num_of_oxs, oy):
+        """
+        get Fourier coefficients for the specific test function where oy is constant.
+        those coefficients are for approximating the :math:`\psi` function which in turn will
+        be used as an approximation of the Fourier coefficients of :math:`F`
+        Args:
+            num_of_oxs: (int) number of points in :math:`[-\pi,\pi)`
+            oy: (int) a constant for calculating :math:`\left\{\ c_{oy,ox}(F)\right\}_{|ox|\leq M}`
+        Returns:
+            returns a mpmath.matrix array with coefficients for :math:`\psi_{\omega_y}`
+        """
         m = num_of_oxs
         coeff_array = mpm.matrix(2 * m + 1, 1)
         for ox in range(-m, m + 1):
