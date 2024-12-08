@@ -15,8 +15,8 @@ class TestFunctions:
             self.smoothness_order = const.F2_F3_SMOOTHNESS_ORDER
 
     def get_jump_magnitudes_of_fx(self, x):
-        """
-        get the exact jump magnitudes of a slice Fx
+        r"""
+        Get the exact jump magnitudes of a slice Fx
 
         Args:
             x: (mpmath.mpf) a point in :math:`[-\pi, \pi)`
@@ -48,8 +48,8 @@ class TestFunctions:
             return self.__get_func_type_3_val_at_point(x, y)
 
     def get_jump_loc_of_fx(self, x):
-        """
-        get the exact jump location of a slice :math:`F_x`
+        r"""
+        Get the exact jump location of a slice :math:`F_x`
 
         Args:
             x: (mpmath.mpf) a point in :math:`[-\pi, \pi)`
@@ -87,8 +87,8 @@ class TestFunctions:
         return s
 
     def get_func_slice_at_x(self, x, Y):
-        """
-        get the exact values of a slice :math:`F_x`
+        r"""
+        Get the exact values of a slice :math:`F_x`
 
         Args:
             x: (mpmath.mpf) a point in :math:`[-\pi, \pi)`
@@ -140,8 +140,8 @@ class TestFunctions:
         return func_val
 
     def get_func_discontinuity_curve(self, nx=64):
-        """
-        get the discontinuity curve of :math:`F`
+        r"""
+        Get the discontinuity curve of :math:`F`
         Args:
             nx: (int) number of points to sample from :math:`[-\pi, \pi)` for the discontinuity curve.
         Returns:
@@ -164,8 +164,8 @@ class TestFunctions:
             return 1
 
     def get_func_fourier_coefficient_const_oy_range_ox(self, num_of_oxs, oy):
-        """
-        get Fourier coefficients for the specific test function where oy is constant.
+        r"""
+        Get Fourier coefficients for the specific test function where oy is constant.
         those coefficients are for approximating the :math:`\psi` function which in turn will
         be used as an approximation of the Fourier coefficients of :math:`F`
         Args:

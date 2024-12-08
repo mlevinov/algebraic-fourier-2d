@@ -1,0 +1,19 @@
+/* custom.css */
+div.sphinxsidebar {
+    /* white-space: normal; 
+    word-wrap: break-word;  */
+    width: 300px;
+}
+
+div.bodywrapper {
+    margin: 0 0 0 calc(300px + 30px);
+  }
+
+
+/* div.sphinxsidebar .wy-menu-vertical .current ul li a span, */
+span.pre {
+/* div.sphinxsidebar .wy-menu-vertical ul li a span { */
+    white-space: normal; /* Enable wrapping for long function names */
+    word-wrap: break-word; /* Break long words */
+    overflow-wrap: break-word; /* Break long words */
+}
