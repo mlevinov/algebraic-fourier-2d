@@ -31,4 +31,4 @@ python -m http.server -d build/html
 ```
 
 ## Figures
-To reproduce the figures from the paper, see `docs/notebooks/figs_plots.ipynb`
+To reproduce the figures from the paper, run [figs_plots.ipynb](docs/source/notebooks/figs_plots.ipynb)
