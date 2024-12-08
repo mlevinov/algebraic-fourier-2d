@@ -124,7 +124,7 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
 
 def approximate_jump_location(reconstruction_order, func_coeff_array, half_order_flag=False, get_omega_flag=False):
     """
-
+    calculating the approximated jump location of :math:`\psi_{\omega_y}\text{ or } F_x`
     Args:
         reconstruction_order:
         func_coeff_array:
