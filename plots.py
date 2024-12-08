@@ -51,7 +51,6 @@ def plot_exact_f_and_exact_jump_curve(X, Y, func_vals, test_func_type, show_plot
         plt.close()
     else:
         plt.show()
-    return 0
 
 
 def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, test_func_type, n_oy, show_plot=True, save_plot=False):
@@ -97,7 +96,6 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
         plt.close()
     else:
         plt.show()
-    return 0
 
 
 def plot_err_in_approx_fx_vs_n(x, oy_vals_arr, decay_rate_arr, approx_fx_err, reconstruction_order,
@@ -203,7 +201,6 @@ def plot_err_in_approx_jump_magnitudes_vs_n(x, oy_vals_arr, decay_rate_arr, appr
         plt.close()
     else:
         plt.show()
-    return 0
 
 
 if __name__ == "__main__":

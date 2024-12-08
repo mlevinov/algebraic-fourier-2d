@@ -23,3 +23,6 @@ For documentation, install `sphinx`:
 ```bash
 pip install sphinx
 ```
+
+To build the docs: `rm -rf build && make html`
+To serve the docs locally: `python -m http.server -d build/html`

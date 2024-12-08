@@ -101,11 +101,11 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
     max_steps = 50
     extra_prec = 10
     polynomial_roots = []
-    convergenceflag = True
+    convergenceflag = False
     while tries > 0:
         try:
             polynomial_roots = mpm.polyroots(coefficients, maxsteps=max_steps, extraprec=extra_prec)
-            convergenceflag = False
+            convergenceflag = True
             break
         except mpm.libmp.libhyper.noconvergence:
             convergenceflag = False
@@ -118,7 +118,7 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
             sys.exit('\nfirst coefficient must be not zero\n')
     if not convergenceflag:
         # raise norootconvergenceerror(tries, max_steps, extra_prec)
-        print('')
+        print(f'Did not converge after {tries} tries')
     return polynomial_roots
 
 
@@ -180,7 +180,7 @@ def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approxim
             b[i, 0] = mpm.fmul(mk_val, mpm.power(omega, -index))
         except ZeroDivisionError:
             print()
-            print('devision by zero error')
+            print('division by zero error')
             print('applying the next fix to continue b[i,0] = b[i-1, 0] if i>=0, else b[0,0] = 0')
             print('notice that the results would lose accuracy')
             print()
@@ -226,14 +226,14 @@ def __closest_root_to_unit_disk(roots):
 
 
 def __vn_func_val_at_x(x, n, jump_loc):
-    a1 = mpm.power(const.two_pi, n)
+    a1 = mpm.power(const.TWO_PI, n)
     a2 = mpm.factorial(n + 1)
     a3 = -mpm.fdiv(a1, a2)
     z = mpm.fsub(x, jump_loc)
-    if 0 <= z < const.two_pi:
-        zz = mpm.fdiv(z, const.two_pi)
-    elif -const.two_pi <= z < 0:
-        zz = mpm.fdiv(mpm.fadd(z, const.two_pi), const.two_pi)
+    if 0 <= z < const.TWO_PI:
+        zz = mpm.fdiv(z, const.TWO_PI)
+    elif -const.TWO_PI <= z < 0:
+        zz = mpm.fdiv(mpm.fadd(z, const.TWO_PI), const.TWO_PI)
     else:
         return -mpm.inf
     a4 = mpm.bernpoly(n + 1, zz)
@@ -244,7 +244,7 @@ def __vn_func_val_at_x(x, n, jump_loc):
 def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
     if k != 0:
         omega = mpm.expj(-mpm.fmul(jump_loc, k))
-        c = mpm.fdiv(omega, const.two_pi)
+        c = mpm.fdiv(omega, const.TWO_PI)
         r = 0
         for l in range(reconstruction_order + 1):
             al = jump_mag_array[l, 0]
@@ -260,7 +260,7 @@ def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
 def __mk(ro, k, ck):
     a1 = mpm.power(mpm.fmul(1j, k), ro + 1)
     a2 = mpm.fmul(a1, ck)
-    return mpm.fmul(const.two_pi, a2)
+    return mpm.fmul(const.TWO_PI, a2)
 
 
 def __create_polynomial_coefficients(reconstruction_order, func_coeff_col_vec, half_order_flag=True):
