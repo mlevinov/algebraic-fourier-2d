@@ -8,6 +8,12 @@ Welcome to 2D reconstruction's documentation!
 
 .. toctree::
    :maxdepth: 2
+   :caption: Examples
+
+   notebooks/figs_plots.ipynb
+
+.. toctree::
+   :maxdepth: 2
    :caption: Contents:
 
    modules

@@ -21,7 +21,7 @@ pip install mpmath tqdm matplotlib ipykernel ipywidgets
 
 For documentation, install `sphinx`:
 ```bash
-pip install sphinx
+pip install sphinx nbsphinx myst_parser
 ```
 
 To build and serve the docs locally:
@@ -29,3 +29,6 @@ To build and serve the docs locally:
 cd docs && rm -rf build && make html
 python -m http.server -d build/html
 ```
+
+## Figures
+To reproduce the figures from the paper, see `docs/notebooks/figs_plots.ipynb`

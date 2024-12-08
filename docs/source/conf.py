@@ -15,12 +15,37 @@ author = 'Michael Levinov'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.napoleon', 'sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.autosummary']
+extensions = [
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.imgmath',
+    'nbsphinx',
+    'myst_parser',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.autosummary']
 
 templates_path = ['_templates']
 exclude_patterns = []
 
+# Enable MyST in notebooks
+nb_custom_formats = {
+    ".ipynb": ["nbsphinx", {"mdformat": "myst"}],
+}
 
+# Enable MyST extensions
+myst_enable_extensions = [
+    "dollarmath",
+    "amsmath",
+    "deflist",
+    "fieldlist",
+    "html_admonition",
+    "html_image",
+    "colon_fence",
+    "smartquotes",
+    "replacements",
+    "linkify",
+]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

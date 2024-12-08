@@ -21,7 +21,7 @@ def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
         x: (mpmath.mpf or float) :math:`x \in [-\pi,\pi)`
         reconstruction_order: (int) - chosen reconstruction order for :math:`F_{x}` or :math:`\psi_{\omega_y}`
         jump_loc: (mpmath.mpc or float) - approximated or exact point of the jump location for :math:`F_{x}` or :math:`\psi_{\omega_y}`
-        jump_mag_array: (mpmath.matrix) - approximated or exact magnitudes of the jumps at jump_loc for :math:`F_{x}\text{ or }\psi_{\omega_y`
+        jump_mag_array: (mpmath.matrix) - approximated or exact magnitudes of the jumps at jump_loc for :math:`F_{x}\text{ or }\psi_{\omega_y}`
 
     Returns:
         returns a mpmath.mpc value representing :math:`\phi(x)`
