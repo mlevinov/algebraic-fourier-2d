@@ -124,8 +124,9 @@ def _check_type_of_mpmath_matrix(mpmath_mat):
 
 
 def elementwise_norm_matrix(mp_arr1, mp_arr2):
-    """
-    Calculates :math:`\lvert \text{mp_arr1[i,j]-mp_arr2[i,j]} \rvert` for each :math:`1\leq i\leq m`
+    r"""
+    Calculates :math:`\lvert \text{mp\_arr1[i,j]-mp\_arr2[i,j]} \rvert`
+    for each :math:`1\leq i\leq m`
     and :math:`1\leq j\leq n` where mp_arr1, mp_arr2 are of order :math:`m\times n`
 
     Args:
