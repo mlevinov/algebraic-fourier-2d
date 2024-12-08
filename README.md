@@ -1,7 +1,7 @@
 # Algebraic Reconstruction of Piecewise-Smooth Functions of Two Variables from Fourier Data 
 
 ## Description
-This is the implementation of the *2D algorithm* give on pages 42 which relies on the [mpmath](https://mpmath.org/) python library for arbitrary precision calculations.  
+This is the implementation of the *2D algorithm* given in Section 2.5 of the paper. It relies on the [mpmath](https://mpmath.org/) python library for arbitrary precision calculations.  
   
 * The user will be able to recreate the results shown in *Numerical Experiments* chapter (p.42).
 * The *single_jump_param_recovery.py* file contains the methods for the reconstruction of a 2D function that meets the required assumptions given in *Definition 3*.
@@ -31,4 +31,4 @@ python -m http.server -d build/html
 ```
 
 ## Figures
-To reproduce the figures from the paper, run [figs_plots.ipynb](docs/source/notebooks/figs_plots.ipynb)
+To reproduce the figures from Section 3 of the paper, run [figs_plots.ipynb](docs/source/notebooks/figs_plots.ipynb)
