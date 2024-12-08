@@ -5,10 +5,28 @@ from mpmath import libmp
 
 
 def set_mpmath_precision(dps=20):
+    """
+    setting the precision for the mpmath library
+    args:
+        dps: (int) - number of significant numbers
+    returns: no return
+    """
     mpm.mp.dps = dps
 
 
 def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
+    """
+    calculate :math:`\phi(x)`
+    Args:
+        x: (mpmath.mpf or float) :math:`x \in [-\pi,\pi)`
+        reconstruction_order: (int) - chosen reconstruction order for :math:`F_{x}` or :math:`\psi_{\omega_y}`
+        jump_loc: (mpmath.mpc or float) - approximated or exact point of the jump location for :math:`F_{x}` or :math:`\psi_{\omega_y}`
+        jump_mag_array: (mpmath.matrix) - approximated or exact magnitudes of the jumps at jump_loc for :math:`F_{x}\text{ or }\psi_{\omega_y`
+
+    Returns:
+        returns a mpmath.mpc value representing :math:`\phi(x)`
+
+    """
     d = reconstruction_order
     s = 0
     for l in range(d + 1):
@@ -20,6 +38,19 @@ def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
 
 
 def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
+    """
+    calculate the value of :math:`\psi_{\omega_y}(x)`
+    Args:
+        x: :math:`x\in [-\pi, \pi)`
+        reconstruction_order: (int) - chosen reconstruction order for :math:`\psi_{\omega_y}`
+        func_coeff_array: (mpmath.matrix) - array of exact Fourier coefficients for reconstructing :math:`\psi_{\omega_y}`
+        jump_loc: (mpmath.mpc) - value representing the jump location of :math:`\psi_{\omega_y}`
+        jump_mag_array: (mpmath.matrix) - an array containing the jump magnitudes of :math:`\psi_{\omega_y}`'s derivatives
+
+    Returns:
+        returns the approximated value of :math:`\psi_{\omega_y}(x)`
+
+    """
     m = func_coeff_array.rows // 2
     s = 0
     for k in range(-m, m + 1):
@@ -33,6 +64,19 @@ def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_
 
 
 def func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
+    """
+    approximated value of :math:`F_x(y)` (x is just a placeholder for a value in :math:`[-\pi, \pi)`
+    Args:
+        x: :math:`x \in [-\pi, \pi)`
+        reconstruction_order: (int) - reconstruction order for :math:`\psi_{\omega_y}\text{ and } F_x`
+        func_coeff_array: (mpmath.matrix) - exact Fourier coefficients for reconstructing :math:`\psi_{\omega_y}`
+        jump_loc: (mpmath.mpc) - approximated location of :math:`F_x` jump location
+        jump_mag_array: (mpmath.matrix) - an array of jump magnitudes of :math:`F_x` at jump_loc
+
+    Returns:
+        returns the approximated value of :math:`F_x` at the given point
+
+    """
     phi_val = phi_func_val_at_x(x=x, reconstruction_order=reconstruction_order, jump_loc=jump_loc,
                                 jump_mag_array=jump_mag_array)
     psi_val = psi_func_val_at_x(x=x, reconstruction_order=reconstruction_order, func_coeff_array=func_coeff_array,
@@ -41,33 +85,55 @@ def func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_
 
 
 def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
+    """
+    calculates the roots of :math:`q_N^d` where d is the reconstruction order
+    Args:
+        reconstruction_order: (int) - reconstruction order for :math:`\psi_{\omega_y}\text{ and } F_x`
+        func_coeff_array: (mpmath.matrix) - exact Fourier coefficients for :math:`\psi_{\omega_y}` or approximated Fourier coefficients for :math:`Fx`
+        half_order_flag: (boolean) - a flag to indicate the method for calculating the roots
+
+    Returns:
+        returns a list of :math:`q_N^d`'s roots
+
+    """
     coefficients = __create_polynomial_coefficients(reconstruction_order, func_coeff_array, half_order_flag)
     tries = 10
     max_steps = 50
     extra_prec = 10
     polynomial_roots = []
-    convergenceFlag = True
+    convergenceflag = True
     while tries > 0:
         try:
             polynomial_roots = mpm.polyroots(coefficients, maxsteps=max_steps, extraprec=extra_prec)
-            convergenceFlag = True
+            convergenceflag = False
             break
-        except mpm.libmp.libhyper.NoConvergence:
-            convergenceFlag = False
+        except mpm.libmp.libhyper.noconvergence:
+            convergenceflag = False
             max_steps += 25
             extra_prec += 10
             tries -= 1
         except ZeroDivisionError:
             print('\nZeroDivisionError:')
             print('\ncoefficients for polynomial are:\n{}'.format(coefficients))
-            sys.exit('\nfirst coefficient must be NOT ZERO\n')
-    if not convergenceFlag:
-        # raise NoRootConvergenceError(tries, max_steps, extra_prec)
+            sys.exit('\nfirst coefficient must be not zero\n')
+    if not convergenceflag:
+        # raise norootconvergenceerror(tries, max_steps, extra_prec)
         print('')
     return polynomial_roots
 
 
 def approximate_jump_location(reconstruction_order, func_coeff_array, half_order_flag=False, get_omega_flag=False):
+    """
+
+    Args:
+        reconstruction_order:
+        func_coeff_array:
+        half_order_flag:
+        get_omega_flag:
+
+    Returns:
+
+    """
     m = func_coeff_array.rows // 2
     if half_order_flag:
         roots = poly_roots(reconstruction_order, func_coeff_array, half_order_flag=True)
@@ -80,7 +146,7 @@ def approximate_jump_location(reconstruction_order, func_coeff_array, half_order
         half_order_root = approximate_jump_location(reconstruction_order, func_coeff_array, half_order_flag=True, get_omega_flag=True)
         n = m // (reconstruction_order + 2)
         if n == 0:
-            print('M = {} -> floor(M/(d+2)) = 0')
+            print('m = {} -> floor(m/(d+2)) = 0')
             return 1
         z_n = __closest_root_to_unit_disk(poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False))
         closest_root_to_half_order_root = z_n
@@ -103,7 +169,7 @@ def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approxim
     m = func_coeff_array.rows // 2
     n = m // (reconstruction_order + 2)
 
-    VNd = mpm.matrix(reconstruction_order + 1, reconstruction_order + 1)
+    vnd = mpm.matrix(reconstruction_order + 1, reconstruction_order + 1)
     approximated_jump_magnitudes = mpm.matrix(reconstruction_order + 1, 1)
     # creating b
     b = mpm.matrix(reconstruction_order + 1, 1)
@@ -122,16 +188,16 @@ def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approxim
                 b[i, 0] = b[i - 1, 0]
             else:
                 b[i, 0] = 0
-        # continue to create row i in VNd
+        # continue to create row i in vnd
         for j in range(reconstruction_order + 1):
-            VNd[i, j] = mpm.power(index, j)
+            vnd[i, j] = mpm.power(index, j)
 
-    # solving VNd * x = b
-    sol = mpm.lu_solve(VNd, b)
+    # solving vnd * x = b
+    sol = mpm.lu_solve(vnd, b)
     # extracting the actual jump magnitudes:
-    # denote A_l as the jump magnitude of d^l/dx^l(Fx) at its singularity then
-    # denote a_l = sol[l]-> sol = [a_0, a_1, ..., a_l]^T, then
-    # A_l = (-i)^(r0-l) * a_(ro-l)
+    # denote a_l as the jump magnitude of d^l/dx^l(fx) at its singularity then
+    # denote a_l = sol[l]-> sol = [a_0, a_1, ..., a_l]^t, then
+    # a_l = (-i)^(r0-l) * a_(ro-l)
     for l in range(reconstruction_order + 1):
         # sol = [alpha_0,..., alpha_d]
         # s = alpha_d -> alpha_0
@@ -160,14 +226,14 @@ def __closest_root_to_unit_disk(roots):
 
 
 def __vn_func_val_at_x(x, n, jump_loc):
-    a1 = mpm.power(const.TWO_PI, n)
+    a1 = mpm.power(const.two_pi, n)
     a2 = mpm.factorial(n + 1)
     a3 = -mpm.fdiv(a1, a2)
     z = mpm.fsub(x, jump_loc)
-    if 0 <= z < const.TWO_PI:
-        zz = mpm.fdiv(z, const.TWO_PI)
-    elif -const.TWO_PI <= z < 0:
-        zz = mpm.fdiv(mpm.fadd(z, const.TWO_PI), const.TWO_PI)
+    if 0 <= z < const.two_pi:
+        zz = mpm.fdiv(z, const.two_pi)
+    elif -const.two_pi <= z < 0:
+        zz = mpm.fdiv(mpm.fadd(z, const.two_pi), const.two_pi)
     else:
         return -mpm.inf
     a4 = mpm.bernpoly(n + 1, zz)
@@ -178,7 +244,7 @@ def __vn_func_val_at_x(x, n, jump_loc):
 def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
     if k != 0:
         omega = mpm.expj(-mpm.fmul(jump_loc, k))
-        c = mpm.fdiv(omega, const.TWO_PI)
+        c = mpm.fdiv(omega, const.two_pi)
         r = 0
         for l in range(reconstruction_order + 1):
             al = jump_mag_array[l, 0]
@@ -194,7 +260,7 @@ def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
 def __mk(ro, k, ck):
     a1 = mpm.power(mpm.fmul(1j, k), ro + 1)
     a2 = mpm.fmul(a1, ck)
-    return mpm.fmul(const.TWO_PI, a2)
+    return mpm.fmul(const.two_pi, a2)
 
 
 def __create_polynomial_coefficients(reconstruction_order, func_coeff_col_vec, half_order_flag=True):
