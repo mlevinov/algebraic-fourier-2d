@@ -3,6 +3,7 @@ import numpy as np
 import single_jump_param_recovery as sjpr
 from tqdm import tqdm
 import constants as const
+import mpmath_tools as mpt
 
 
 class TestFunctions:
@@ -179,6 +180,15 @@ class TestFunctions:
         for ox in range(-m, m + 1):
             coeff_array[m + ox, 0] = self.get_func_fourier_coefficient(ox, oy)
         return coeff_array
+
+    def compute_1d_fourier_of_fx(self, x, Y, M, N):
+        Z = np.zeros(shape=Y.shape, dtype=complex)
+        x_arr = np.full(Y.shape, x)
+        for m in range(-M, M + 1):
+            for n in range(-N, N + 1):
+                cmn = mpt.mpmath_num_to_numpy(self.get_func_fourier_coefficient(m, n))
+                Z += cmn * np.exp(1j * (m * x_arr + n * Y))
+        return Z
 
     def __get_fourier_func_type_1_coefficient(self, ox, oy):
         if oy == 0 or ox == -oy:

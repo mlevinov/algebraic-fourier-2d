@@ -95,7 +95,9 @@ def mpmath_num_to_numpy(mpmath_num):
         numpy: same value as mpmath_num but using numpy library
 
     """
-    if isinstance(mpmath_num, mpm.mpf):
+    if isinstance(mpmath_num, int):
+        return mpmath_num
+    elif isinstance(mpmath_num, mpm.mpf):
         s = float(mpm.nstr(mpmath_num, mpm.mp.dps))
         return s
     elif isinstance(mpmath_num, mpm.mpc):

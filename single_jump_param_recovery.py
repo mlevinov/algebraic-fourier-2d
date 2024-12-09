@@ -226,14 +226,14 @@ def __closest_root_to_unit_disk(roots):
 
 
 def __vn_func_val_at_x(x, n, jump_loc):
-    a1 = mpm.power(const.two_pi, n)
+    a1 = mpm.power(const.TWO_PI, n)
     a2 = mpm.factorial(n + 1)
     a3 = -mpm.fdiv(a1, a2)
     z = mpm.fsub(x, jump_loc)
-    if 0 <= z < const.two_pi:
-        zz = mpm.fdiv(z, const.two_pi)
-    elif -const.two_pi <= z < 0:
-        zz = mpm.fdiv(mpm.fadd(z, const.two_pi), const.two_pi)
+    if 0 <= z < const.TWO_PI:
+        zz = mpm.fdiv(z, const.TWO_PI)
+    elif -const.TWO_PI <= z < 0:
+        zz = mpm.fdiv(mpm.fadd(z, const.TWO_PI), const.TWO_PI)
     else:
         return -mpm.inf
     a4 = mpm.bernpoly(n + 1, zz)
@@ -244,7 +244,7 @@ def __vn_func_val_at_x(x, n, jump_loc):
 def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
     if k != 0:
         omega = mpm.expj(-mpm.fmul(jump_loc, k))
-        c = mpm.fdiv(omega, const.two_pi)
+        c = mpm.fdiv(omega, const.TWO_PI)
         r = 0
         for l in range(reconstruction_order + 1):
             al = jump_mag_array[l, 0]
@@ -260,7 +260,7 @@ def __calc_coeff_phi(k, reconstruction_order, jump_loc, jump_mag_array):
 def __mk(ro, k, ck):
     a1 = mpm.power(mpm.fmul(1j, k), ro + 1)
     a2 = mpm.fmul(a1, ck)
-    return mpm.fmul(const.two_pi, a2)
+    return mpm.fmul(const.TWO_PI, a2)
 
 
 def __create_polynomial_coefficients(reconstruction_order, func_coeff_col_vec, half_order_flag=True):
