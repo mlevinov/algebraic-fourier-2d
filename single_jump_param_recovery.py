@@ -105,10 +105,10 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
     while tries > 0:
         try:
             polynomial_roots = mpm.polyroots(coefficients, maxsteps=max_steps, extraprec=extra_prec)
-            convergenceflag = False
+            convergenceFlag = False
             break
-        except mpm.libmp.libhyper.noconvergence:
-            convergenceflag = False
+        except mpm.libmp.libhyper.NoConvergence:
+            convergenceFlag = False
             max_steps += 25
             extra_prec += 10
             tries -= 1

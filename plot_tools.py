@@ -51,9 +51,8 @@ def get_fxErr_jumpLocErr_jumpMagErr(x, Y, n_oy, test_func_type, reconstruction_o
     exactFx = tf.get_func_slice_at_x(x=x, Y=Y)
     exactJumpLoc = tf.get_jump_loc_of_fx(x=x)
     exactJumpMag = tf.get_jump_magnitudes_of_fx(x=x)
-    tpl = get_approxFx_approxJumpLoc_approxJumpMag(x=x, Y=Y, n_oy=n_oy,
-                                                                                                              test_func_type=test_func_type,
-                                                                                                              reconstruction_order=reconstruction_order)
+    tpl = get_approxFx_approxJumpLoc_approxJumpMag(x=x, Y=Y, n_oy=n_oy, test_func_type=test_func_type,
+                                                   reconstruction_order=reconstruction_order)
     fx_max_err = mpt.get_max_err_val(exact_vals=exactFx, approx_vals=tpl[0])
     jump_loc_err = mpm.fabs(mpm.fsub(exactJumpLoc, tpl[1]))
     jump_mag_err = mpt.elementwise_norm_matrix(exactJumpMag[:tpl[2].rows, 0], tpl[2])

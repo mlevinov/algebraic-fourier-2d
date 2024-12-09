@@ -212,17 +212,17 @@ if __name__ == "__main__":
     ##################################################################
     #################### General Input Parameters ####################
     ##################################################################
-    mpm.mp.dps = 30
+    mpm.mp.dps = 100
     func_type = const.FUNC_TYPE_F2
     psi_jump_loc = -const.MP_PI
     x = 1.1
     ny = 16
     Y = np.linspace(-const.NP_PI, const.NP_PI - const.EPS, ny)
-    oy_str_val = 10
-    num_of_oy_vals = 4
-    inc_oy = 3
+    oy_str_val = 25
+    num_of_oy_vals = 20
+    inc_oy = 5
     test_func_type = 2
-    reconstruction_order = 0
+    reconstruction_order = 9
     show_plot = True
     save_plot = False
 
@@ -250,9 +250,9 @@ if __name__ == "__main__":
                                                                                      inc_oy=inc_oy, test_func_type=test_func_type,
                                                                                      reconstruction_order=reconstruction_order)
 
-    plot_err_in_approx_fx_vs_trunc_fourier_sum_vs_n(x=x, oy_vals_arr=tpl[0], decay_rate_arr=tpl[1], approx_fx_err=tpl[2], trunc_fourier_sum_err=tpl[5],
-                                                    reconstruction_order=reconstruction_order, test_func_type=test_func_type, show_plot=show_plot,
-                                                    save_plot=save_plot)
+    # plot_err_in_approx_fx_vs_trunc_fourier_sum_vs_n(x=x, oy_vals_arr=tpl[0], decay_rate_arr=tpl[1], approx_fx_err=tpl[2], trunc_fourier_sum_err=tpl[5],
+    #                                                 reconstruction_order=reconstruction_order, test_func_type=test_func_type, show_plot=show_plot,
+    #                                                 save_plot=save_plot)
 
     # plot_err_in_approx_jump_location_at_x_vs_n(x=x, oy_vals_arr=tpl[0], decay_rate_arr=tpl[1], approx_fx_jump_loc_err=tpl[3],
     #                                            reconstruction_order=reconstruction_order, test_func_type=test_func_type,
