@@ -99,17 +99,19 @@ def plot_approx_f_and_approx_jump_curve(X, Y, f_tilde_vals, jump_curve_tilde, te
         plt.show()
 
 
-def plot_err_in_approx_fx_vs_n(x, oy_vals_arr, decay_rate_arr, approx_fx_err, reconstruction_order,
-                               test_func_type=const.FUNC_TYPE_F1, show_plot=True, save_plot=False):
+def plot_err_in_approx_fx_vs_trunc_fourier_sum_vs_n(x, oy_vals_arr, decay_rate_arr, approx_fx_err, trunc_fourier_sum_err, reconstruction_order,
+                                                 test_func_type=const.FUNC_TYPE_F1, show_plot=True, save_plot=False):
+    trunc_fourier_sum_err_np = mpt.mpm_matrix_to_mpmath_numpy_array(trunc_fourier_sum_err)
     err_fx_np = mpt.mpm_matrix_to_mpmath_numpy_array(approx_fx_err)
     fig, ax = plt.subplots(figsize=[10, 6])
-    title01 = r'$\Delta F_x$ vs $N$'
+    title01 = r'$\Delta F_x$ vs $\Delta\mathcal{T}(F_x)$ vs $N$ '
     title02 = r'$\text{reconstruction order} = %d,\; x = %s $' % (reconstruction_order, x)
     ax.set_title(title01 + '\n' + title02, fontsize="20")
     ax.plot(oy_vals_arr, decay_rate_arr, '^-.', label=r'$N^{-%d}$' % (reconstruction_order + 1))
     ax.plot(oy_vals_arr, np.real(err_fx_np), '*--', label=r'$\Delta(F_x)$')
+    ax.plot(oy_vals_arr, trunc_fourier_sum_err_np, 'o-.', label=r'$\Delta \mathcal{T}(F_x)$')
     ax.set_xlabel(r'$N$', fontsize="20")
-    ax.set_ylabel(r'$\Delta F_x$', fontsize="20")
+    ax.set_ylabel(r'$\Delta F_x$, $\Delta \mathcal{T}(F_x)$', fontsize="20")
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.legend(fontsize="18", markerscale=1.5)
@@ -208,31 +210,31 @@ if __name__ == "__main__":
     ##################################################################
     #################### General Input Parameters ####################
     ##################################################################
-    mpm.mp = 30
+    mpm.mp.dps = 100
     func_type = const.FUNC_TYPE_F2
     psi_jump_loc = -const.MP_PI
-    x = 1
-    ny = 16
+    x = 1.1
+    ny = 64
     Y = np.linspace(-const.NP_PI, const.NP_PI - const.EPS, ny)
-    oy_str_val = 15
-    num_of_oy_vals = 5
+    oy_str_val = 25
+    num_of_oy_vals = 20
     inc_oy = 5
     test_func_type = 2
-    reconstruction_order = 0
+    reconstruction_order = 9
     show_plot = True
     save_plot = False
 
     ############################################################################
     ####################### Exact F and Exact Jump Curve #######################
     ############################################################################
-
+    print('Exact F and Exact Jump Curve\n')
     plot_exact_f_and_exact_jump_curve(X=Y, Y=Y, func_vals=TestFunctions(func_type=test_func_type).get_func_val(X=Y, Y=Y),
                                       test_func_type=test_func_type, show_plot=show_plot, save_plot=save_plot)
 
     ##########################################################################################
     ####################### Approximated F and Approximated Jump Curve #######################
     ##########################################################################################
-
+    print('\nApproximated F and Approximated Jump Curve\n')
     tpl = plt_t.get_approxF_approxJumpCurve_approxJumpMags(X=Y, Y=Y, n_oy=oy_str_val, test_func_type=test_func_type,
                                                            reconstruction_order=reconstruction_order)
     plot_approx_f_and_approx_jump_curve(X=Y, Y=Y, f_tilde_vals=tpl[0], jump_curve_tilde=tpl[1], test_func_type=test_func_type,
@@ -241,13 +243,14 @@ if __name__ == "__main__":
     #####################################################################################################
     ########## Approximated Fx and Approximated Jump Location and Approximated Jump Magnitudes ##########
     #####################################################################################################
+    print('\nApproximated Fx and Approximated Jump Location and Approximated Jump Magnitudes\n')
+    tpl = plt_t.get_fxErr_jumpLocErr_jumpMagErr_truncFourierSumErr_different_oy_vals(x=x, Y=Y, oy_strt_val=oy_str_val, num_of_oy_vals=num_of_oy_vals,
+                                                                                     inc_oy=inc_oy, test_func_type=test_func_type,
+                                                                                     reconstruction_order=reconstruction_order)
 
-    tpl = plt_t.get_fxErr_jumpLocErr_jumpMagErr_different_oy_vals(x=x, Y=Y, oy_strt_val=oy_str_val, num_of_oy_vals=num_of_oy_vals,
-                                                                  inc_oy=inc_oy, test_func_type=test_func_type,
-                                                                  reconstruction_order=reconstruction_order)
-
-    plot_err_in_approx_fx_vs_n(x=x, oy_vals_arr=tpl[0], decay_rate_arr=tpl[1], approx_fx_err=tpl[2], reconstruction_order=reconstruction_order,
-                               test_func_type=test_func_type, show_plot=show_plot, save_plot=save_plot)
+    plot_err_in_approx_fx_vs_trunc_fourier_sum_vs_n(x=x, oy_vals_arr=tpl[0], decay_rate_arr=tpl[1], approx_fx_err=tpl[2], trunc_fourier_sum_err=tpl[5],
+                                                    reconstruction_order=reconstruction_order, test_func_type=test_func_type, show_plot=show_plot,
+                                                    save_plot=save_plot)
 
     plot_err_in_approx_jump_location_at_x_vs_n(x=x, oy_vals_arr=tpl[0], decay_rate_arr=tpl[1], approx_fx_jump_loc_err=tpl[3],
                                                reconstruction_order=reconstruction_order, test_func_type=test_func_type,

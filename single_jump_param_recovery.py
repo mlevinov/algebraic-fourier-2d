@@ -108,14 +108,14 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
     max_steps = 50
     extra_prec = 10
     polynomial_roots = []
-    convergenceflag = False
+    convergenceFlag = False
     while tries > 0:
         try:
             polynomial_roots = mpm.polyroots(coefficients, maxsteps=max_steps, extraprec=extra_prec)
-            convergenceflag = True
+            convergenceFlag = True
             break
-        except mpm.libmp.libhyper.noconvergence:
-            convergenceflag = False
+        except mpm.libmp.libhyper.NoConvergence:
+            convergenceFlag = False
             max_steps += 25
             extra_prec += 10
             tries -= 1
@@ -123,7 +123,7 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
             print('\nZeroDivisionError:')
             print('\ncoefficients for polynomial are:\n{}'.format(coefficients))
             sys.exit('\nfirst coefficient must be not zero\n')
-    if not convergenceflag:
+    if not convergenceFlag:
         # raise norootconvergenceerror(tries, max_steps, extra_prec)
         print(f'Did not converge after {tries} tries')
     return polynomial_roots
