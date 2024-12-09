@@ -7,21 +7,25 @@ from mpmath import libmp
 def set_mpmath_precision(dps=20):
     """
     setting the precision for the mpmath library
+    
     args:
         dps: (int) - number of significant numbers
-    returns: no return
+    
+    returns:
+        None
     """
     mpm.mp.dps = dps
 
 
 def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
-    """
+    r"""
     calculate :math:`\phi(x)`
+    
     Args:
         x: (mpmath.mpf or float) :math:`x \in [-\pi,\pi)`
         reconstruction_order: (int) - chosen reconstruction order for :math:`F_{x}` or :math:`\psi_{\omega_y}`
         jump_loc: (mpmath.mpc or float) - approximated or exact point of the jump location for :math:`F_{x}` or :math:`\psi_{\omega_y}`
-        jump_mag_array: (mpmath.matrix) - approximated or exact magnitudes of the jumps at jump_loc for :math:`F_{x}\text{ or }\psi_{\omega_y`
+        jump_mag_array: (mpmath.matrix) - approximated or exact magnitudes of the jumps at jump_loc for :math:`F_{x}\text{ or }\psi_{\omega_y}`
 
     Returns:
         returns a mpmath.mpc value representing :math:`\phi(x)`
@@ -38,8 +42,9 @@ def phi_func_val_at_x(x, reconstruction_order, jump_loc, jump_mag_array):
 
 
 def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
-    """
+    r"""
     calculate the value of :math:`\psi_{\omega_y}(x)`
+    
     Args:
         x: :math:`x\in [-\pi, \pi)`
         reconstruction_order: (int) - chosen reconstruction order for :math:`\psi_{\omega_y}`
@@ -64,8 +69,9 @@ def psi_func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_
 
 
 def func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_array):
-    """
-    approximated value of :math:`F_x(y)` (x is just a placeholder for a value in :math:`[-\pi, \pi)`
+    r"""
+    Approximated value of :math:`F_x(y)` (x is just a placeholder for a value in :math:`[-\pi, \pi)`
+    
     Args:
         x: :math:`x \in [-\pi, \pi)`
         reconstruction_order: (int) - reconstruction order for :math:`\psi_{\omega_y}\text{ and } F_x`
@@ -85,8 +91,9 @@ def func_val_at_x(x, reconstruction_order, func_coeff_array, jump_loc, jump_mag_
 
 
 def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
-    """
+    r"""
     calculates the roots of :math:`q_N^d` where d is the reconstruction order
+    
     Args:
         reconstruction_order: (int) - reconstruction order for :math:`\psi_{\omega_y}\text{ and } F_x`
         func_coeff_array: (mpmath.matrix) - exact Fourier coefficients for :math:`\psi_{\omega_y}` or approximated Fourier coefficients for :math:`Fx`
@@ -101,11 +108,11 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
     max_steps = 50
     extra_prec = 10
     polynomial_roots = []
-    convergenceflag = True
+    convergenceFlag = False
     while tries > 0:
         try:
             polynomial_roots = mpm.polyroots(coefficients, maxsteps=max_steps, extraprec=extra_prec)
-            convergenceFlag = False
+            convergenceFlag = True
             break
         except mpm.libmp.libhyper.NoConvergence:
             convergenceFlag = False
@@ -116,15 +123,16 @@ def poly_roots(reconstruction_order, func_coeff_array, half_order_flag=False):
             print('\nZeroDivisionError:')
             print('\ncoefficients for polynomial are:\n{}'.format(coefficients))
             sys.exit('\nfirst coefficient must be not zero\n')
-    if not convergenceflag:
+    if not convergenceFlag:
         # raise norootconvergenceerror(tries, max_steps, extra_prec)
-        print('')
+        print(f'Did not converge after {tries} tries')
     return polynomial_roots
 
 
 def approximate_jump_location(reconstruction_order, func_coeff_array, half_order_flag=False, get_omega_flag=False):
-    """
-    calculating the approximated jump location of :math:`\psi_{\omega_y}\text{ or } F_x`
+    r"""
+    Calculating the approximated jump location of :math:`\psi_{\omega_y}\text{ or } F_x`
+    
     Args:
         reconstruction_order:
         func_coeff_array:
@@ -132,7 +140,7 @@ def approximate_jump_location(reconstruction_order, func_coeff_array, half_order
         get_omega_flag:
 
     Returns:
-
+        returns the approximated jump location of :math:`\psi_{\omega_y}\text{ or } F_x`
     """
     m = func_coeff_array.rows // 2
     if half_order_flag:
@@ -180,7 +188,7 @@ def approximate_jump_magnitudes(reconstruction_order, func_coeff_array, approxim
             b[i, 0] = mpm.fmul(mk_val, mpm.power(omega, -index))
         except ZeroDivisionError:
             print()
-            print('devision by zero error')
+            print('division by zero error')
             print('applying the next fix to continue b[i,0] = b[i-1, 0] if i>=0, else b[0,0] = 0')
             print('notice that the results would lose accuracy')
             print()
