@@ -1,7 +1,7 @@
 # Algebraic Reconstruction of Piecewise-Smooth Functions of Two Variables from Fourier Data 
 
 ## Description
-This is the implementation of the *2D algorithm* given in Section 2.5 of the paper. It relies on the [mpmath](https://mpmath.org/) python library for arbitrary precision calculations.  
+This is the implementation of the *2D algorithm* given in Section 2.5 of the paper [1]. It relies on the [mpmath](https://mpmath.org/) python library for arbitrary precision calculations.  
   
 * The user will be able to recreate the results shown in *Numerical Experiments* chapter (p.42).
 * The *single_jump_param_recovery.py* file contains the methods for the reconstruction of a 2D function that meets the required assumptions given in *Definition 3*.
@@ -12,6 +12,9 @@ This is the implementation of the *2D algorithm* given in Section 2.5 of the pap
   * $F_2(x,y)$ has a discontinuity curve $\xi(x) = x$ and jump magnitudes of $\frac{d}{dx}F_2$ at each $x\in [-\pi, \pi)$ are equal to 1 (constant) as $d = 0,\ldots, 11$.
   * $F_3(x,y)$ has a discontinuity curve $\xi(x) = \frac{x}{2}$ and jump magnitudes of $\frac{d}{dx}F_3$ at each $x\in [-\pi, \pi)$ are equal to 1 (constant) as $d = 0,\ldots, 11$.
 * The *plot_tools.py* file contains the implementation of the algorithm on the test functions and provides the data for the *plots.py* file and can be used as an example for an implementation.
+
+[1] M. Levinov, Y. Yomdin, and D. Batenkov, “Algebraic Reconstruction of Piecewise-Smooth Functions of Two Variables from Fourier Data,” Mar. 04, 2025. [arXiv:2503.02254](https://arxiv.org/abs/2503.02254)
+
 
 ## Setup
 
